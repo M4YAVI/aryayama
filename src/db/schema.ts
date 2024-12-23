@@ -32,3 +32,13 @@ export const postTags = table('post_tags', {
     .notNull()
     .references(() => tags.id),
 });
+
+export const goals = table('goals', {
+  id: integer('id').primaryKey(),
+  goal: text('goal').notNull(),
+  year: integer('year').notNull(),
+  isComplete: integer('is_complete', { mode: 'boolean' })
+    .notNull()
+    .default(false),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+});

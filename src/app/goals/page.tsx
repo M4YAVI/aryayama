@@ -1,66 +1,102 @@
-// app/goals/page.tsx
-import { CheckCircle, Circle } from 'lucide-react';
-import { Indie_Flower } from 'next/font/google';
+// app/page.tsx
+import { getAllGoalsSummary, getYearlyGoals } from '@/actions/goalsAction';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import Link from 'next/link';
 
-const indieFlower = Indie_Flower({ subsets: ['latin'], weight: '400' });
+export const dynamic = 'force-dynamic';
 
-const GoalsPage: React.FC = () => {
-  const goals = [
-    { id: 0, text: 'Master DeepLearning and AI', completed: false },
-    { id: 1, text: 'Learn Rust programming language', completed: false },
-    { id: 2, text: 'Learn Pytorch', completed: false },
-    { id: 4, text: 'Read one book per month', completed: false },
-    { id: 20, text: 'Contribute to an open-source project', completed: false },
+export default async function Home() {
+  const yearlyGoals = await getYearlyGoals();
+  const allGoals = await getAllGoalsSummary();
 
-    { id: 96, text: 'Start a blog', completed: true },
-    { id: 98, text: 'Create a personal website', completed: true },
-    { id: 99, text: 'Start a side project', completed: true },
-    { id: 100, text: 'Run a 5k', completed: true },
-  ];
+  const totalGoals = allGoals.length;
+  const completedGoalsTotal = allGoals.filter((goal) => goal.isComplete).length;
+  const notCompletedGoalsTotal = totalGoals - completedGoalsTotal;
 
   return (
-    <div
-      className={`${indieFlower.className} min-h-screen   text-white flex justify-center items-center p-8`}
-    >
-      <div className=" p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h1 className="text-3xl md:text-4xl text-center mb-6 animate-pulse">
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-            My Goals
-          </span>{' '}
-        </h1>
-        <ul className="space-y-4">
-          {goals.map((goal) => (
-            <li
-              key={goal.id}
-              className={`flex items-center space-x-4 p-3 rounded-md transition-colors duration-200 cursor-pointer ${goal.completed} group`}
-            >
-              <span className="flex-shrink-0">
-                {goal.completed ? (
-                  <CheckCircle className="text-green-400" size={20} />
-                ) : (
-                  <Circle className="text-gray-400" size={20} />
-                )}
-              </span>
-              <span
-                className={`text-lg group-hover:underline transition-all duration-200 ${
-                  goal.completed ? 'line-through opacity-70' : ''
-                }`}
-              >
-                {goal.text}
-              </span>
-            </li>
-          ))}
-        </ul>
-        {goals.every((goal) => goal.completed) && (
-          <div className="mt-8 text-center">
-            <p className="text-sm  animate-bounce">
-              🎉 All goals achieved! Time for new ones?
-            </p>
+    <div className="max-w-4xl mx-auto p-4 space-y-8">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Overall Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4">
+            <div className="flex justify-between">
+              <span>Total Goals:</span>
+              <span>{totalGoals}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Completed:</span>
+              <span>{completedGoalsTotal}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Not Completed:</span>
+              <span>{notCompletedGoalsTotal}</span>
+            </div>
+            {totalGoals > 0 && (
+              <div>
+                <Progress
+                  value={(completedGoalsTotal / totalGoals) * 100}
+                  className="mb-2"
+                />
+                <p className="text-sm text-muted-foreground text-right">
+                  {((completedGoalsTotal / totalGoals) * 100).toFixed(0)}%
+                </p>
+              </div>
+            )}
           </div>
-        )}
+        </CardContent>
+      </Card>
+
+      <div className="space-y-8">
+        {Object.entries(yearlyGoals)
+          .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
+          .map(([year, goals]) => {
+            const completedGoals = goals.filter(
+              (goal) => goal.isComplete
+            ).length;
+            const notCompletedGoals = goals.length - completedGoals;
+            const progress =
+              goals.length > 0 ? (completedGoals / goals.length) * 100 : 0;
+
+            return (
+              <Card key={year}>
+                <CardHeader>
+                  <CardTitle>
+                    <Link href={`/goals/${year}`} className="hover:underline">
+                      {year}
+                    </Link>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-2">
+                    <div className="flex justify-between">
+                      <span>Total Goals:</span>
+                      <span>{goals.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Completed:</span>
+                      <span>{completedGoals}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Not Completed:</span>
+                      <span>{notCompletedGoals}</span>
+                    </div>
+                    {goals.length > 0 && (
+                      <div>
+                        <Progress value={progress} className="mb-2" />
+                        <p className="text-sm text-muted-foreground text-right">
+                          {progress.toFixed(0)}%
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
       </div>
     </div>
   );
-};
-
-export default GoalsPage;
+}
