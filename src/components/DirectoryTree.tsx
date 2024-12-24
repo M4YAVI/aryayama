@@ -19,6 +19,10 @@ const DirectoryTree = () => {
     { name: 'MarkView', url: 'https://markview-eight.vercel.app/' },
   ];
 
+  const Productivity = [
+    { name: 'Typing Game', url: 'https://aryayama.vercel.app/typing' },
+  ];
+
   return (
     <div className="text-white p-6 rounded-md shadow-md font-mono text-lg">
       <div className="flex items-center space-x-2 mb-3">
@@ -47,6 +51,28 @@ const DirectoryTree = () => {
               isLink
               icon={<Link className="text-green-400" size={18} />}
               url={link.url}
+              textSize="text-base"
+            />
+          ))}
+        </div>
+
+        <TreeItem
+          name="Productivity"
+          level={1}
+          prefix="├─"
+          icon={<Folder className="text-yellow-500" size={18} />}
+          textSize="text-base"
+        />
+        <div className="ml-4">
+          {Productivity.map((item, index) => (
+            <TreeItem
+              key={index}
+              name={item.name}
+              level={2}
+              prefix={index === Productivity.length - 1 ? '└─' : '├─'}
+              isLink
+              icon={<Link className="text-green-400" size={18} />}
+              url={item.url}
               textSize="text-base"
             />
           ))}
