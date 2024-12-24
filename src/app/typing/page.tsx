@@ -3,35 +3,36 @@
 import { generateText } from '@/actions/typingAction';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// Add utility function to check special characters
 const isSpecialChar = (char: string) => {
   return /[.,!?]/.test(char);
 };
 
-// Initial sentences array
 const initialSentences = [
   'The quick brown fox jumps over the lazy dog.',
   'Pack my box with five dozen liquor jugs.',
 ];
-const MIN_ACCURACY_THRESHOLD = 85; // 85% accuracy threshold
+const MIN_ACCURACY_THRESHOLD = 85;
 
 export default function Page() {
-  // Add new states
+  const [prompt, setPrompt] = useState(
+    'Generate a random topic related to deep learning, covering everything in detailed in a blog-style with a human tone'
+  );
+  const [isPromptModalOpen, setIsPromptModalOpen] = useState(false);
   const [sentences, setSentences] = useState(initialSentences);
   const [isFetching, setIsFetching] = useState(false);
   const [lastWpm, setLastWpm] = useState(0);
   const [error, setError] = useState<string | null>(null);
-
-  // State management
   const [userInput, setUserInput] = useState('');
   const [isComposing, setIsComposing] = useState(false);
   const [composingText, setComposingText] = useState('');
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [wpm, setWpm] = useState(0);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const promptInputRef = useRef<HTMLTextAreaElement>(null);
 
   const currentSentence = sentences[currentSentenceIndex];
 
@@ -60,6 +61,13 @@ export default function Page() {
     return Math.round(wordsTyped / minutes);
   }, []);
 
+  const handlePromptSubmit = async () => {
+    setIsPromptModalOpen(false);
+    setCurrentSentenceIndex(0);
+    setSentences(initialSentences);
+    await fetchNewSentences();
+  };
+
   const fetchNewSentences = async () => {
     if (isFetching) return;
 
@@ -67,8 +75,8 @@ export default function Page() {
       setIsFetching(true);
       setError(null);
 
-      const text1 = await generateText();
-      const text2 = await generateText();
+      const text1 = await generateText(prompt);
+      const text2 = await generateText(prompt);
 
       if (text1 && text2) {
         const newSentences = [text1, text2].map((text) =>
@@ -85,11 +93,7 @@ export default function Page() {
     } catch (error) {
       console.error('Failed to fetch new sentences:', error);
       setError('Failed to fetch new sentences. Using fallback sentences.');
-
-      const fallbackSentences = [
-        'The quick brown fox jumps over the lazy dog.',
-      ];
-      setSentences((prev) => [...prev, ...fallbackSentences]);
+      setSentences((prev) => [...prev, ...initialSentences]);
     } finally {
       setIsFetching(false);
     }
@@ -259,11 +263,18 @@ export default function Page() {
   return (
     <div className="flex h-screen items-center justify-center">
       <section data-animate className="flex flex-col gap-8">
-        {' '}
-        {/* Reduced gap */}
-        <h1 className="text-3xl font-bold text-white">Typing Game</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-white">Typing Game</h1>
+          <button
+            onClick={() => setIsPromptModalOpen(true)}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors"
+          >
+            Customize Prompt
+          </button>
+        </div>
+
         <div
-          className="flex flex-col items-center justify-center p-4 relative gap-2" // Reduced gap
+          className="flex flex-col items-center justify-center p-4 relative gap-2"
           onClick={() => !isTransitioning && inputRef.current?.focus()}
         >
           <input
@@ -282,9 +293,7 @@ export default function Page() {
             autoFocus
           />
 
-          <div className="text-xl font-mono leading-relaxed text-center w-full max-w-3xl ">
-            {' '}
-            {/* Adjusted font size and leading, Added max width */}
+          <div className="text-xl font-mono leading-relaxed text-center w-full max-w-3xl">
             {currentSentence.split('').map((char, index) => {
               const isTyped = index < userInput.length;
               const typedChar = userInput[index];
@@ -327,8 +336,6 @@ export default function Page() {
           </div>
 
           <div className="text-sm text-gray-400 flex items-center justify-center gap-2 mt-2">
-            {' '}
-            {/* Centered and added mt for space */}
             <span>
               {currentSentenceIndex + 1} / {sentences.length}
             </span>
@@ -352,6 +359,37 @@ export default function Page() {
             )}
           </div>
         </div>
+
+        {isPromptModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div className="bg-black rounded-lg p-6 max-w-2xl w-full">
+              <h2 className="text-xl font-bold text-white mb-4">
+                Customize Generation Prompt
+              </h2>
+              <textarea
+                ref={promptInputRef}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="w-full h-32 p-2 bg-black text-white rounded-md mb-4"
+                placeholder="Enter your prompt for text generation..."
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setIsPromptModalOpen(false)}
+                  className="px-4 py-2 bg-black hover:bg-gray-700 text-white rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handlePromptSubmit}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );
