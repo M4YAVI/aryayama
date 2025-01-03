@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { BadgeCheck } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -51,11 +52,18 @@ export default function Home() {
           </div>
 
           <div className="max-w-xl mx-auto text-center">
-            <p className="text-balance leading-relaxed mb-6  p-4 rounded-xl">
-              "Suddenly, I started shaking, but not because I was cold or the
-              weather was bad. It wasn't even because I was scared. I was
-              probably just excited and nervous."
+            <p className=" leading-relaxed mb-6  p-4 rounded-xl">
+              "I'm not lazy; I'm just in energy-conserving mode, and adulting
+              has started."
             </p>
+            <span>
+              <Link
+                className="bg-yellow-400 text-black"
+                href="https://aryayama.vercel.app/rules"
+              >
+                My rules
+              </Link>
+            </span>
             <DirectoryTree />
           </div>
         </div>
