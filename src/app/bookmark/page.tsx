@@ -7,12 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
-import { ExternalLink, Search, Settings2 } from 'lucide-react';
+import { Search, Settings2 } from 'lucide-react';
+import Image from 'next/image';
 import { KeyboardEvent, useEffect, useState } from 'react';
+
+type Bookmark = {
+  id: string;
+  title: string;
+  url: string;
+  createdAt: string;
+};
 
 export default function BookmarkPage() {
   const [input, setInput] = useState('');
-  const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [isManaging, setIsManaging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -33,6 +41,7 @@ export default function BookmarkPage() {
         setSearchPerformed(true);
         try {
           const results = await getBookmarks(debouncedSearch);
+          //@ts-ignore
           setBookmarks(results);
         } finally {
           setSearching(false);
@@ -51,6 +60,7 @@ export default function BookmarkPage() {
         if (result.success) {
           setInput('');
           const updated = await getBookmarks();
+          //@ts-ignore
           setBookmarks(updated);
         }
       } finally {
@@ -74,6 +84,7 @@ export default function BookmarkPage() {
     setSearching(true);
     try {
       const results = await getBookmarks();
+      //@ts-ignore
       setBookmarks(results);
     } finally {
       setSearching(false);
@@ -134,7 +145,21 @@ export default function BookmarkPage() {
             bookmarks.map((bookmark) => (
               <Card key={bookmark.id}>
                 <CardContent className="p-4 flex items-start gap-4">
-                  <ExternalLink className="h-4 w-4 mt-1 text-muted-foreground" />
+                  <div className="relative w-4 h-4">
+                    <Image
+                      src={`https://www.google.com/s2/favicons?domain=${
+                        new URL(bookmark.url).hostname
+                      }&sz=32`}
+                      alt={`${bookmark.title} favicon`}
+                      className="object-contain"
+                      width={16}
+                      height={16}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/fallback-icon.png';
+                      }}
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium">{bookmark.title}</h3>
                     <a
