@@ -14,12 +14,13 @@ const DirectoryTree = () => {
   ];
 
   const projects = [
-    { name: '___', url: 'https://project-alpha.example.com' },
+    { name: 'Rag Chat', url: 'https://rag-chat-phi.vercel.app/' },
     { name: 'PromptPal', url: 'https://promptpal-cyan.vercel.app/' },
     { name: 'MarkView', url: 'https://markview-eight.vercel.app/' },
   ];
 
   const Productivity = [
+    { name: 'BookMark', url: 'https://aryayama.vercel.app/bookmark' },
     { name: 'Typing Game', url: 'https://aryayama.vercel.app/typing' },
   ];
 

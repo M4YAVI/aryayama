@@ -36,6 +36,13 @@
       "when": 1734923015735,
       "tag": "0004_silky_talon",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1735893518566,
+      "tag": "0005_lonely_annihilus",
+      "breakpoints": true
     }
   ]
 }

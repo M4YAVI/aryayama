@@ -42,3 +42,10 @@ export const goals = table('goals', {
     .default(false),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const bookmarks = table('bookmarks', {
+  id: text('id').primaryKey(),
+  url: text('url').notNull(),
+  title: text('title').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
