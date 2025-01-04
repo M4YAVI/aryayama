@@ -1,4 +1,7 @@
+// app/components/GitHubHeatmap.tsx
 'use client';
+
+import { UserData, fetchGitHubData } from '@/actions/gitAction';
 import {
   Select,
   SelectContent,
@@ -31,7 +34,6 @@ const getCurrentYearWeeks = () => {
 
 const WEEKS_IN_YEAR = getCurrentYearWeeks();
 
-// Updated themes with more vibrant and cooler combinations
 const themes = {
   neon: ['#000000', '#ff0055', '#ff0088', '#ff00cc', '#ff00ff'],
   arctic: ['#000000', '#004466', '#006699', '#0088cc', '#00aaff'],
@@ -42,17 +44,6 @@ const themes = {
 
 type ThemeKey = keyof typeof themes;
 
-interface Contribution {
-  date: string;
-  count: number;
-}
-
-interface UserData {
-  contributions: Contribution[];
-  totalStars: number;
-  publicRepos: number;
-}
-
 const GitHubHeatmap = () => {
   const [theme, setTheme] = useState<ThemeKey>('neon');
   const [loading, setLoading] = useState(true);
@@ -60,59 +51,23 @@ const GitHubHeatmap = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const loadData = async () => {
       try {
-        const reposResponse = await fetch(
-          `https://api.github.com/users/${USERNAME}/repos`
+        const data = await fetchGitHubData(USERNAME);
+        setUserData(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'An unexpected error occurred'
         );
-
-        if (!reposResponse.ok) {
-          if (reposResponse.status === 404) {
-            throw new Error('User not found');
-          }
-          throw new Error(
-            `Failed to fetch repositories: Status ${reposResponse.status}`
-          );
-        }
-        const repos = await reposResponse.json();
-
-        if (repos.message === 'Not Found') {
-          throw new Error('User not found');
-        }
-
-        const totalStars = repos.reduce(
-          (sum: number, repo: any) => sum + repo.stargazers_count,
-          0
-        );
-        const publicRepos = repos.length;
-
-        const contributionsResponse = await fetch(
-          `https://github-contributions-api.jogruber.de/v4/${USERNAME}`
-        );
-
-        if (!contributionsResponse.ok) {
-          throw new Error(
-            `Failed to fetch contributions: Status ${contributionsResponse.status}`
-          );
-        }
-
-        const contributionsData = await contributionsResponse.json();
-
-        setUserData({
-          contributions: contributionsData.contributions,
-          totalStars,
-          publicRepos,
-        });
-      } catch (err: any) {
-        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    loadData();
   }, []);
 
+  // Rest of the component remains the same...
   const getColor = (count: number): string => {
     const themeColors = themes[theme];
     if (count === 0) return themeColors[0];
@@ -174,7 +129,7 @@ const GitHubHeatmap = () => {
                   }}
                 />
               </TooltipTrigger>
-              <TooltipContent className=" p-3 rounded-lg shadow-xl">
+              <TooltipContent className="p-3 rounded-lg shadow-xl">
                 <div className="space-y-1">
                   <p className="font-medium">{formatDate(dateString)}</p>
                   <p>

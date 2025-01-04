@@ -7,9 +7,9 @@ const rules = [
   "If it doesn't meet my standards, it won't get my touch.",
   'Cut the nonsense—let’s keep it real.',
   'Dust off; they’ll probably drop dead from karma soon.',
-  'Never Talk About Yourself',
-  'Plan for Every Scenario',
-  'Do Not Depend on Others',
+  'Never Talk About Yourself.',
+  'Plan for Every Scenario.',
+  'Do Not Depend on Others.',
 ];
 
 export default function RuleNote() {
