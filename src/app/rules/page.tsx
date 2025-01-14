@@ -1,15 +1,27 @@
 'use client';
-
+import localFont from 'next/font/local';
 import { useEffect, useState } from 'react';
+
+const deathNoteFont = localFont({
+  src: [
+    {
+      path: '../fonts/DeathNote.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
+  display: 'swap',
+});
 
 const rules = [
   "If I don't have to do it, I won't. If I have to do it, I'll make it quick.",
-  "If it doesn't meet my standards, it won't get my touch.",
-  'Cut the nonsense—let’s keep it real.',
-  'Dust off; they’ll probably drop dead from karma soon.',
-  'Never Talk About Yourself.',
-  'Plan for Every Scenario.',
-  'Do Not Depend on Others.',
+  'My standards are non-negotiable.',
+  "Ditch the fluff; let's keep it real.",
+  'They reap what they sow, anyway.',
+  'Always expect the unexpected.',
+  'Rely on yourself.',
+  'Less talking, more doing.',
+  'Embrace discomfort.',
 ];
 
 export default function RuleNote() {
@@ -18,6 +30,7 @@ export default function RuleNote() {
   );
   const [currentRule, setCurrentRule] = useState(0);
   const [currentChar, setCurrentChar] = useState(0);
+  const [isHovered, setIsHovered] = useState(-1);
 
   useEffect(() => {
     if (currentRule >= rules.length) return;
@@ -27,7 +40,7 @@ export default function RuleNote() {
       setTimeout(() => {
         setCurrentRule((prev) => prev + 1);
         setCurrentChar(0);
-      }, 1000); // Pause between rules
+      }, 1200); // Slightly longer pause between rules
       return;
     }
 
@@ -38,37 +51,46 @@ export default function RuleNote() {
         return newText;
       });
       setCurrentChar((prev) => prev + 1);
-    }, 50); // Speed of typing
+    }, 75); // Slightly slower typing for dramatic effect
 
     return () => clearTimeout(timer);
   }, [currentRule, currentChar]);
 
   return (
-    <div className="min-h-screen bg-notebook-dark p-4 sm:p-8 flex items-center justify-center">
-      <div className="w-full max-w-4xl bg-notebook-parchment p-4 sm:p-6 relative overflow-hidden">
-        <h1 className="text-4xl sm:text-6xl font-bold text-notebook-red mb-8 text-center tracking-wider font-deathnote">
+    <div className="min-h-screen p-8 sm:p-12 flex items-center justify-center">
+      <div className="w-full max-w-5xl p-8 sm:p-10 relative">
+        <h1 className="text-7xl sm:text-8xl font-bold mb-12 text-center tracking-[0.2em] transform hover:scale-105 transition-transform duration-300">
           RULE NOTE
         </h1>
-
-        <div className="space-y-6">
+        <div className="space-y-8">
           {rules.map((_, index) => (
             <div
               key={index}
-              className={`transition-opacity duration-300 ${
-                displayedText[index] ? 'opacity-100' : 'opacity-0'
+              className={`transition-all duration-500 transform ${
+                displayedText[index]
+                  ? 'translate-x-0 opacity-100'
+                  : 'translate-x-[-50px] opacity-0'
               }`}
+              onMouseEnter={() => setIsHovered(index)}
+              onMouseLeave={() => setIsHovered(-1)}
             >
-              <p className="text-3xl sm:text-5xl font-bold text-notebook-red mb-8 tracking-wider font-deathnote">
-                <span className="text-notebook-red font-bold">
-                  Rule-{index + 1}:
+              <div className="flex items-start gap-4">
+                <span className="text-2xl sm:text-3xl font-bold transition-all duration-300">
+                  {index + 1}:
                 </span>
-                <span className="flex-1">
+                <p
+                  className={`${
+                    deathNoteFont.className
+                  } text-4xl sm:text-5xl tracking-wide leading-tight transform transition-all duration-300 ${
+                    isHovered === index ? 'scale-105' : ''
+                  }`}
+                >
                   {displayedText[index]}
                   {currentRule === index && (
-                    <span className="animate-pulse">|</span>
+                    <span className="animate-pulse ml-1">|</span>
                   )}
-                </span>
-              </p>
+                </p>
+              </div>
             </div>
           ))}
         </div>

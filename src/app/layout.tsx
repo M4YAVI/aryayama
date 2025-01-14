@@ -1,4 +1,4 @@
-import Header from '@/components/Nav';
+import { DockNav } from '@/components/DockNav';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Roboto_Mono } from 'next/font/google';
@@ -25,8 +25,11 @@ export default function RootLayout({
       <body
         className={`${robotoMono.className} ${robotoMono.variable} antialiased`}
       >
-        <Header />
+        <div className="flex items-center justify-center">
+          <DockNav />
+        </div>
         {children}
+
         <Toaster />
       </body>
     </html>

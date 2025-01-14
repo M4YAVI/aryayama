@@ -1,106 +1,158 @@
-// DirectoryTree.tsx
 'use client';
+import {
+  ChevronDown,
+  ChevronRight,
+  File,
+  Folder,
+  FolderOpen,
+} from 'lucide-react';
+import React, { useState } from 'react';
+interface LinkItem {
+  name: string;
+  url: string;
+}
 
-import { Folder, Link } from 'lucide-react';
-import TreeItem from './TreeItem';
+interface FolderSectionProps {
+  name: string;
+  items: LinkItem[];
+  isExpanded: boolean;
+  onToggle: () => void;
+}
 
-const DirectoryTree = () => {
-  console.log('Rendering DirectoryTree component');
+interface ExpandedFolders {
+  links: boolean;
+  productivity: boolean;
+  projects: boolean;
+}
 
-  const links = [
-    { name: 'Github', url: 'https://github.com/Aryayama-Nyx' },
+// DirectoryTree.tsx
+
+const DirectoryTree: React.FC = () => {
+  const [expandedFolders, setExpandedFolders] = useState<ExpandedFolders>({
+    links: true,
+    productivity: true,
+    projects: true,
+  });
+
+  const links: LinkItem[] = [
     { name: 'Portfolio', url: 'https://aryayama-nyx.vercel.app' },
     { name: 'myanimelist', url: 'https://myanimelist.net/profile/AryayamaNyx' },
   ];
 
-  const projects = [
+  const projects: LinkItem[] = [
     { name: 'Rag Chat', url: 'https://rag-chat-phi.vercel.app/' },
     { name: 'PromptPal', url: 'https://promptpal-cyan.vercel.app/' },
     { name: 'MarkView', url: 'https://markview-eight.vercel.app/' },
   ];
 
-  const Productivity = [
+  const productivity: LinkItem[] = [
     { name: 'BookMark', url: 'https://aryayama.vercel.app/bookmark' },
     { name: 'Typing Game', url: 'https://aryayama.vercel.app/typing' },
   ];
 
+  const toggleFolder = (folder: keyof ExpandedFolders): void => {
+    setExpandedFolders((prev) => ({
+      ...prev,
+      [folder]: !prev[folder],
+    }));
+  };
+
   return (
-    <div className="text-white p-6 rounded-md shadow-md font-mono text-lg">
-      <div className="flex items-center space-x-2 mb-3">
+    <div className=" text-white p-6 rounded-lg shadow-xl font-mono text-lg max-w-2xl mx-auto">
+      <div className="flex items-center space-x-2 mb-4 p-3 rounded-md">
         <Folder className="text-blue-400" size={20} />
-        <span>
-          C:<span className="text-purple-500">/</span>Users
-          <span className="text-purple-500">/</span>arya
+        <span className="flex items-center">
+          <span className="text-gray-400">C:</span>
+          <span className="text-purple-500">/</span>
+          <span className="text-gray-300">Users</span>
+          <span className="text-purple-500">/</span>
+          <span className="text-blue-300">arya</span>
           <span className="text-purple-500">/</span>
         </span>
       </div>
-      <div className="ml-6">
-        <TreeItem
+
+      <div className="space-y-2">
+        <FolderSection
           name="Links"
-          level={1}
-          prefix="├─"
-          icon={<Folder className="text-yellow-500" size={18} />}
-          textSize="text-base"
+          items={links}
+          isExpanded={expandedFolders.links}
+          onToggle={() => toggleFolder('links')}
         />
-        <div className="ml-4">
-          {links.map((link, index) => (
-            <TreeItem
-              key={index}
-              name={link.name}
-              level={2}
-              prefix={index === links.length - 1 ? '└─' : '├─'}
-              isLink
-              icon={<Link className="text-green-400" size={18} />}
-              url={link.url}
-              textSize="text-base"
-            />
-          ))}
-        </div>
 
-        <TreeItem
+        <FolderSection
           name="Productivity"
-          level={1}
-          prefix="├─"
-          icon={<Folder className="text-yellow-500" size={18} />}
-          textSize="text-base"
+          items={productivity}
+          isExpanded={expandedFolders.productivity}
+          onToggle={() => toggleFolder('productivity')}
         />
-        <div className="ml-4">
-          {Productivity.map((item, index) => (
-            <TreeItem
-              key={index}
-              name={item.name}
-              level={2}
-              prefix={index === Productivity.length - 1 ? '└─' : '├─'}
-              isLink
-              icon={<Link className="text-green-400" size={18} />}
-              url={item.url}
-              textSize="text-base"
-            />
-          ))}
-        </div>
 
-        <TreeItem
+        <FolderSection
           name="Projects"
-          level={1}
-          prefix="└─"
-          icon={<Folder className="text-yellow-500" size={18} />}
-          textSize="text-base"
+          items={projects}
+          isExpanded={expandedFolders.projects}
+          onToggle={() => toggleFolder('projects')}
         />
-        <div className="ml-4">
-          {projects.map((project, index) => (
-            <TreeItem
+      </div>
+    </div>
+  );
+};
+
+const FolderSection: React.FC<FolderSectionProps> = ({
+  name,
+  items,
+  isExpanded,
+  onToggle,
+}) => {
+  return (
+    <div className="pl-2">
+      <div
+        className="flex items-center space-x-2 cursor-pointer  p-1 rounded transition-colors duration-200"
+        onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            onToggle();
+            e.preventDefault();
+          }
+        }}
+      >
+        <span className="w-4">
+          {isExpanded ? (
+            <ChevronDown className="text-gray-400" size={16} />
+          ) : (
+            <ChevronRight className="text-gray-400" size={16} />
+          )}
+        </span>
+        {isExpanded ? (
+          <FolderOpen className="text-yellow-500" size={18} />
+        ) : (
+          <Folder className="text-yellow-500" size={18} />
+        )}
+        <span className="text-gray-200">{name}</span>
+      </div>
+
+      {isExpanded && (
+        <div className="ml-6 space-y-1 mt-1">
+          {items.map((item, index) => (
+            <a
               key={index}
-              name={project.name}
-              level={2}
-              prefix={index === projects.length - 1 ? '└─' : '├─'}
-              isLink
-              icon={<Link className="text-green-400" size={18} />}
-              url={project.url}
-              textSize="text-base"
-            />
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 hover:bg-gray-800 p-1 rounded transition-colors duration-200 group"
+            >
+              <File
+                className="text-green-400 group-hover:text-green-300"
+                size={16}
+              />
+              <span className="text-blue-300 group-hover:text-blue-200 text-base">
+                {item.name}
+              </span>
+            </a>
           ))}
         </div>
-      </div>
+      )}
     </div>
   );
 };

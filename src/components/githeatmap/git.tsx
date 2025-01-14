@@ -1,230 +1,121 @@
-// app/components/GitHubHeatmap.tsx
+// components/ContributionsHeatmap.tsx
 'use client';
 
-import { UserData, fetchGitHubData } from '@/actions/gitAction';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { UserData } from '@/actions/gitAction';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { BookIcon, Loader2, StarIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-const USERNAME = 'SangeethChejerla';
-const CELL_SIZE = 12;
-const CELL_GAP = 2;
-const DAYS_IN_WEEK = 7;
+interface ContributionsHeatmapProps {
+  data: UserData;
+}
 
-// Calculate weeks from start of current year to now
-const getCurrentYearWeeks = () => {
-  const now = new Date();
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const diffTime = Math.abs(now.getTime() - startOfYear.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
-};
+const Heatmap = ({ data }: ContributionsHeatmapProps) => {
+  const [tooltipContent, setTooltipContent] = useState<string | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-const WEEKS_IN_YEAR = getCurrentYearWeeks();
+  // Group contributions by week
+  const weeks = data.contributions.reduce<Array<typeof data.contributions>>(
+    (acc, curr, i) => {
+      const weekIndex = Math.floor(i / 7);
+      if (!acc[weekIndex]) acc[weekIndex] = [];
+      acc[weekIndex].push(curr);
+      return acc;
+    },
+    []
+  );
 
-const themes = {
-  neon: ['#000000', '#ff0055', '#ff0088', '#ff00cc', '#ff00ff'],
-  arctic: ['#000000', '#004466', '#006699', '#0088cc', '#00aaff'],
-  volcanic: ['#000000', '#660000', '#990000', '#cc0000', '#ff0000'],
-  emerald: ['#000000', '#004d40', '#00796b', '#009688', '#00bfa5'],
-  plasma: ['#000000', '#4a0072', '#7b1fa2', '#9c27b0', '#e040fb'],
-} as const;
-
-type ThemeKey = keyof typeof themes;
-
-const GitHubHeatmap = () => {
-  const [theme, setTheme] = useState<ThemeKey>('neon');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await fetchGitHubData(USERNAME);
-        setUserData(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'An unexpected error occurred'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  // Rest of the component remains the same...
-  const getColor = (count: number): string => {
-    const themeColors = themes[theme];
-    if (count === 0) return themeColors[0];
-    if (count < 5) return themeColors[1];
-    if (count < 10) return themeColors[2];
-    if (count < 15) return themeColors[3];
-    return themeColors[4];
+  // Get intensity color based on contribution count
+  const getIntensityColor = (count: number) => {
+    if (count === 0) return 'bg-zinc-950';
+    if (count <= 3) return 'bg-emerald-900';
+    if (count <= 6) return 'bg-emerald-700';
+    if (count <= 9) return 'bg-emerald-500';
+    return 'bg-emerald-400';
   };
 
-  const formatDate = (date: string): string => {
-    return new Date(date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+  const handleMouseMove = (
+    event: React.MouseEvent,
+    contribution: UserData['contributions'][0]
+  ) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setTooltipPosition({
+      x: rect.left + window.scrollX,
+      y: rect.top + window.scrollY - 40,
     });
-  };
-
-  const renderHeatmap = () => {
-    if (!userData?.contributions) return null;
-
-    const cells = [];
-    const currentYear = new Date().getFullYear();
-    const startDate = new Date(currentYear, 0, 1);
-
-    for (let week = 0; week < WEEKS_IN_YEAR; week++) {
-      for (let day = 0; day < DAYS_IN_WEEK; day++) {
-        const date = new Date(
-          startDate.getTime() + (week * 7 + day) * 24 * 60 * 60 * 1000
-        );
-        const dateString = date.toISOString().split('T')[0];
-        const contribution = userData.contributions.find(
-          (c) => c.date === dateString
-        );
-        const count = contribution ? contribution.count : 0;
-
-        cells.push(
-          <TooltipProvider key={`${week}-${day}`}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <motion.rect
-                  x={week * (CELL_SIZE + CELL_GAP)}
-                  y={day * (CELL_SIZE + CELL_GAP)}
-                  width={CELL_SIZE}
-                  height={CELL_SIZE}
-                  rx={2}
-                  fill={getColor(count)}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: (week * DAYS_IN_WEEK + day) * 0.005,
-                    type: 'spring',
-                    stiffness: 200,
-                  }}
-                  whileHover={{
-                    scale: 1.2,
-                    transition: { duration: 0.2 },
-                  }}
-                />
-              </TooltipTrigger>
-              <TooltipContent className="p-3 rounded-lg shadow-xl">
-                <div className="space-y-1">
-                  <p className="font-medium">{formatDate(dateString)}</p>
-                  <p>
-                    {count} contribution{count !== 1 ? 's' : ''}
-                  </p>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      }
-    }
-
-    return cells;
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex items-center space-x-3">
-          <Loader2 className="animate-spin" size={24} />
-          <span className="text-lg">Loading GitHub data...</span>
-        </div>
-      </div>
+    setTooltipContent(
+      `${contribution.count} contribution${
+        contribution.count !== 1 ? 's' : ''
+      } on ${format(new Date(contribution.date), 'MMMM d, yyyy')}`
     );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="bg-red-900/50 text-red-100 p-4 rounded-lg">
-          Error loading GitHub data: {error}
-        </div>
-      </div>
-    );
-  }
+  };
 
   return (
-    <div className="p-4 rounded-xl">
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <StarIcon size={24} className="text-yellow-400" />
-            <span className="text-lg">{userData?.totalStars || 0} stars</span>
+    <div className="relative">
+      {/* Stats Overview */}
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-zinc-200">
+          {data.contributions.reduce((sum, curr) => sum + curr.count, 0)} Total
+          Contributions This Year
+        </h2>
+        <div className="flex gap-6 text-sm text-zinc-400">
+          <span>⭐️ {data.totalStars} Stars</span>
+          <span>📦 {data.publicRepos} Repositories</span>
+        </div>
+      </div>
+
+      {/* Heatmap Grid */}
+      <div className="flex gap-1">
+        {weeks.map((week, weekIndex) => (
+          <div key={weekIndex} className="flex flex-col gap-1">
+            {week.map((day) => (
+              <motion.div
+                key={day.date}
+                className={`h-3 w-3 rounded-sm ${getIntensityColor(
+                  day.count
+                )} cursor-pointer transition-colors duration-200 hover:ring-2 hover:ring-emerald-400 hover:ring-offset-2 hover:ring-offset-black`}
+                onMouseEnter={(e) => handleMouseMove(e, day)}
+                onMouseLeave={() => setTooltipContent(null)}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: weekIndex * 0.02 }}
+              />
+            ))}
           </div>
-          <div className="flex items-center space-x-2">
-            <BookIcon size={24} className="text-blue-400" />
-            <span className="text-lg">{userData?.publicRepos || 0} repos</span>
-          </div>
-        </div>
+        ))}
+      </div>
 
-        <div className="flex justify-end">
-          <Select
-            onValueChange={(value) => setTheme(value as ThemeKey)}
-            defaultValue={theme}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select theme" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.keys(themes).map((key) => (
-                <SelectItem key={key} value={key}>
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Tooltip */}
+      {tooltipContent && (
+        <div
+          className="pointer-events-none absolute z-10 rounded-md bg-zinc-800 px-3 py-2 text-sm text-zinc-200 shadow-lg"
+          style={{
+            left: tooltipPosition.x,
+            top: tooltipPosition.y,
+            transform: 'translateX(-50%)',
+          }}
+        >
+          {tooltipContent}
+          <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-zinc-800" />
         </div>
+      )}
 
-        <div className="p-4 rounded-xl shadow-xl overflow-x-auto">
-          <svg
-            width={WEEKS_IN_YEAR * (CELL_SIZE + CELL_GAP) + CELL_GAP}
-            height={DAYS_IN_WEEK * (CELL_SIZE + CELL_GAP) + CELL_GAP}
-            className="mx-auto"
-          >
-            {renderHeatmap()}
-          </svg>
-        </div>
-
-        <div className="flex justify-center items-center space-x-3">
-          <span className="text-sm">Less</span>
-          {themes[theme].map((color, index) => (
-            <motion.div
-              key={index}
-              className="w-4 h-4 rounded-sm"
-              style={{ backgroundColor: color }}
-              whileHover={{ scale: 1.2 }}
-              transition={{ duration: 0.2 }}
-            />
-          ))}
-          <span className="text-sm">More</span>
-        </div>
+      {/* Legend */}
+      <div className="mt-4 flex items-center justify-end gap-2 text-sm text-zinc-400">
+        <span>Less</span>
+        {[
+          'bg-zinc-950',
+          'bg-emerald-900',
+          'bg-emerald-700',
+          'bg-emerald-500',
+          'bg-emerald-400',
+        ].map((color) => (
+          <div key={color} className={`h-3 w-3 rounded-sm ${color}`} />
+        ))}
+        <span>More</span>
       </div>
     </div>
   );
 };
 
-export default GitHubHeatmap;
+export default Heatmap;
