@@ -7,6 +7,7 @@ import {
   FolderOpen,
 } from 'lucide-react';
 import React, { useState } from 'react';
+
 interface LinkItem {
   name: string;
   url: string;
@@ -19,20 +20,8 @@ interface FolderSectionProps {
   onToggle: () => void;
 }
 
-interface ExpandedFolders {
-  links: boolean;
-  productivity: boolean;
-  projects: boolean;
-}
-
-// DirectoryTree.tsx
-
 const DirectoryTree: React.FC = () => {
-  const [expandedFolders, setExpandedFolders] = useState<ExpandedFolders>({
-    links: true,
-    productivity: true,
-    projects: true,
-  });
+  const [expandedFolder, setExpandedFolder] = useState<string | null>(null);
 
   const links: LinkItem[] = [
     { name: 'Portfolio', url: 'https://aryayama-nyx.vercel.app' },
@@ -50,17 +39,14 @@ const DirectoryTree: React.FC = () => {
     { name: 'Typing Game', url: 'https://aryayama.vercel.app/typing' },
   ];
 
-  const toggleFolder = (folder: keyof ExpandedFolders): void => {
-    setExpandedFolders((prev) => ({
-      ...prev,
-      [folder]: !prev[folder],
-    }));
+  const toggleFolder = (folder: string): void => {
+    setExpandedFolder(expandedFolder === folder ? null : folder);
   };
 
   return (
-    <div className=" text-white p-6 rounded-lg shadow-xl font-mono text-lg max-w-2xl mx-auto">
+    <div className="text-white p-6 rounded-lg shadow-xl font-mono text-lg max-w-2xl mx-auto">
       <div className="flex items-center space-x-2 mb-4 p-3 rounded-md">
-        <Folder className="text-blue-400" size={20} />
+        <Folder className="text-white" size={20} />
         <span className="flex items-center">
           <span className="text-gray-400">C:</span>
           <span className="text-purple-500">/</span>
@@ -75,22 +61,22 @@ const DirectoryTree: React.FC = () => {
         <FolderSection
           name="Links"
           items={links}
-          isExpanded={expandedFolders.links}
-          onToggle={() => toggleFolder('links')}
+          isExpanded={expandedFolder === 'Links'}
+          onToggle={() => toggleFolder('Links')}
         />
 
         <FolderSection
           name="Productivity"
           items={productivity}
-          isExpanded={expandedFolders.productivity}
-          onToggle={() => toggleFolder('productivity')}
+          isExpanded={expandedFolder === 'Productivity'}
+          onToggle={() => toggleFolder('Productivity')}
         />
 
         <FolderSection
           name="Projects"
           items={projects}
-          isExpanded={expandedFolders.projects}
-          onToggle={() => toggleFolder('projects')}
+          isExpanded={expandedFolder === 'Projects'}
+          onToggle={() => toggleFolder('Projects')}
         />
       </div>
     </div>
@@ -106,7 +92,7 @@ const FolderSection: React.FC<FolderSectionProps> = ({
   return (
     <div className="pl-2">
       <div
-        className="flex items-center space-x-2 cursor-pointer  p-1 rounded transition-colors duration-200"
+        className="flex items-center space-x-2 cursor-pointer p-1 rounded transition-colors duration-200 hover:bg-gray-800"
         onClick={onToggle}
         role="button"
         tabIndex={0}
@@ -125,9 +111,9 @@ const FolderSection: React.FC<FolderSectionProps> = ({
           )}
         </span>
         {isExpanded ? (
-          <FolderOpen className="text-yellow-500" size={18} />
+          <FolderOpen className="text-white" size={18} />
         ) : (
-          <Folder className="text-yellow-500" size={18} />
+          <Folder className="text-white" size={18} />
         )}
         <span className="text-gray-200">{name}</span>
       </div>
@@ -143,7 +129,7 @@ const FolderSection: React.FC<FolderSectionProps> = ({
               className="flex items-center space-x-2 hover:bg-gray-800 p-1 rounded transition-colors duration-200 group"
             >
               <File
-                className="text-green-400 group-hover:text-green-300"
+                className="text-white group-hover:text-gray-300"
                 size={16}
               />
               <span className="text-blue-300 group-hover:text-blue-200 text-base">
