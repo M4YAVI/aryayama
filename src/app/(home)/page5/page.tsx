@@ -1,10 +1,10 @@
-import Fav from '@/components/home/Fav';
+import RuleNote from '@/app/rules/page';
 import Wrapper from '@/components/home/Wrapper';
 
-export default function Page4() {
+export default function Page5() {
   return (
     <Wrapper>
-      <Fav />
+      <RuleNote />
     </Wrapper>
   );
 }
