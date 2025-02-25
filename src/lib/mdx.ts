@@ -81,42 +81,71 @@ export async function getMDXContentWithFallback(filePath: string) {
     let mdxContent: MDXContent;
     const normalizedPath = filePath.replace(/\\/g, '/');
     
+    // Validate file path
+    if (!normalizedPath.startsWith('src/mdx/')) {
+      throw new Error('Invalid MDX file path. Must be within src/mdx directory.');
+    }
+
     if (process.env.NODE_ENV === 'production') {
       // In production, try to load from pre-compiled data
       const mdxDataPath = path.join(process.cwd(), 'public', 'mdx-data.json');
       if (fs.existsSync(mdxDataPath)) {
-        const mdxData = JSON.parse(fs.readFileSync(mdxDataPath, 'utf8'));
-        const relativePath = normalizedPath.replace('src/mdx/', '');
-        if (mdxData[relativePath]) {
-          mdxContent = mdxData[relativePath];
-          try {
-            // Render the content from source
-            const content = await renderMDXContent(mdxContent.source);
-            return { content, frontmatter: mdxContent.frontmatter };
-          } catch (renderError) {
-            console.error('Error rendering MDX content:', renderError);
-            throw renderError;
+        try {
+          const mdxData = JSON.parse(fs.readFileSync(mdxDataPath, 'utf8'));
+          const relativePath = normalizedPath.replace('src/mdx/', '');
+          if (mdxData[relativePath]) {
+            mdxContent = mdxData[relativePath];
+            try {
+              // Render the content from source
+              const content = await renderMDXContent(mdxContent.source);
+              return { content, frontmatter: mdxContent.frontmatter };
+            } catch (renderError) {
+              console.error('Error rendering pre-compiled MDX content:', renderError);
+              // Don't throw, try fallback compilation
+            }
           }
+        } catch (parseError) {
+          console.error('Error parsing pre-compiled MDX data:', parseError);
+          // Don't throw, try fallback compilation
         }
       }
     }
     
     // Fallback to direct MDX compilation
-    const fullPath = path.join(process.cwd(), filePath);
+    const fullPath = path.join(process.cwd(), normalizedPath);
+    if (!fs.existsSync(fullPath)) {
+      throw new Error(`MDX file not found: ${normalizedPath}`);
+    }
+
     const source = fs.readFileSync(fullPath, 'utf8');
-    const { content, frontmatter } = await compileMDX({
-      source,
-      options: { parseFrontmatter: true },
-    });
-    
-    return { content, frontmatter };
+    if (!source.trim()) {
+      throw new Error(`MDX file is empty: ${normalizedPath}`);
+    }
+
+    try {
+      const { content, frontmatter } = await compileMDX({
+        source,
+        options: { 
+          parseFrontmatter: true,
+          mdxOptions: {
+            development: process.env.NODE_ENV === 'development'
+          }
+        },
+      });
+      
+      return { content, frontmatter };
+    } catch (compileError) {
+      console.error('Error compiling MDX content:', compileError);
+      throw new Error(`Failed to compile MDX content: ${compileError instanceof Error ? compileError.message : String(compileError)}`);
+    }
   } catch (error) {
     console.error('Error loading MDX content:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return {
-      content: React.createElement('div', { className: 'error-message' }, 'Error loading content. Please try again later.'),
+      content: React.createElement('div', { className: 'error-message' }, errorMessage),
       frontmatter: {
         title: 'Error Loading Content',
-        description: 'An error occurred while trying to load the content. Please refresh the page or try again later.',
+        description: errorMessage,
         error: true
       }
     };
