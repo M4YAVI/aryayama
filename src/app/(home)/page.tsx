@@ -38,7 +38,7 @@ export default function Home() {
                 </h1>
                 <BadgeCheck className="h-6 w-6 text-blue-500 animate-pulse" />
               </div>
-              <p className="text-white/80 text-lg">@sangeeth_rch</p>
+              <p className="text-white/80 text-lg">@Shavayurei</p>
             </div>
           </div>
 

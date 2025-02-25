@@ -11,7 +11,15 @@ const withMDX = createMDX({
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['www.google.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+ 
   },
   typescript: {
     ignoreBuildErrors: true,

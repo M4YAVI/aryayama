@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Roboto_Mono } from 'next/font/google';
 import { Analytics } from "@vercel/analytics/react"
 import './globals.css';
+import { SplashScreen } from '@/components/home/SplashScreen';
 
 const robotoMono = Roboto_Mono({
   subsets: ['latin'],
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body
         className={`${robotoMono.className} ${robotoMono.variable} antialiased`}
       >
+        <SplashScreen/>
         <div className="flex items-center justify-center">
           <DockNav />
         </div>
