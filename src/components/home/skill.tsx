@@ -17,34 +17,13 @@ import { agentTechnologies } from "@/constants/agents"
 import { otherTechnologies } from "@/constants/other"
 
 const categories: Category[] = [
-  {
-    name: "Frontend",
-    icon: Globe,
-    technologies: frontendTechnologies,
-  },
-  {
-    name: "Backend",
-    icon: Server,
-    technologies: backendTechnologies,
-  },
-  {
-    name: "Deep Learning",
-    icon: Cpu,
-    technologies: deepLearningTechnologies,
-  },
-  {
-    name: "AI Agents",
-    icon: Bot,
-    technologies: agentTechnologies,
-  },
-  {
-    name: "Other (Tools)",
-    icon: Book,
-    technologies: otherTechnologies,
-  },
+  { name: "Frontend", icon: Globe, technologies: frontendTechnologies },
+  { name: "Backend", icon: Server, technologies: backendTechnologies },
+  { name: "Deep Learning", icon: Cpu, technologies: deepLearningTechnologies },
+  { name: "AI Agents", icon: Bot, technologies: agentTechnologies },
+  { name: "Other (Tools)", icon: Book, technologies: otherTechnologies },
 ]
 
-// Main component
 export default function SkillsShowcase() {
   const [openCategories, setOpenCategories] = React.useState<string[]>([categories[0].name])
   const [selectedTech, setSelectedTech] = React.useState<Category['technologies'][0] | null>(categories[0].technologies[0])
@@ -58,9 +37,9 @@ export default function SkillsShowcase() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] h-screen bg-black text-white">
+    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] min-h-screen bg-black text-white">
       {/* Sidebar */}
-      <div className="bg-black p-4 overflow-auto border-r border-gray-700">
+      <div className="bg-black p-4 border-r border-gray-700">
         {categories.map((category) => (
           <div key={category.name}>
             <motion.div
@@ -101,7 +80,7 @@ export default function SkillsShowcase() {
       </div>
 
       {/* Details Panel */}
-      <div className="bg-black p-4 overflow-auto">
+      <div className="bg-black p-4">
         <AnimatePresence mode="wait">
           {selectedTech ? (
             <motion.div
@@ -119,7 +98,7 @@ export default function SkillsShowcase() {
                 <p className="text-gray-300">{selectedTech.description}</p>
               </div>
               {selectedTech.mdxPath && (
-                <div className="mt-6 prose prose-invert max-w-none">
+                <div className="mt-6 prose prose-invert max-w-none overflow-x-hidden">
                   <MDXContent mdxPath={selectedTech.mdxPath} />
                 </div>
               )}

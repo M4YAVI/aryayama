@@ -191,7 +191,7 @@ export default function EnhancedCommandDialog({
         </motion.div>
       </AnimatePresence>
 
-      <div className="fixed bottom-8 left-0 right-0 flex justify-between px-4 z-30">
+      <div className="sticky bottom-8 left-0 right-0 flex justify-between px-4 z-30">
         <Link href={previousPage || '#'} passHref>
           <Button
             variant="outline"

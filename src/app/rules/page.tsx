@@ -1,4 +1,6 @@
+// components/RuleNote.tsx
 'use client';
+
 import localFont from 'next/font/local';
 import { useEffect, useState } from 'react';
 
@@ -14,86 +16,92 @@ const deathNoteFont = localFont({
 });
 
 const rules = [
-  "If I don't have to do it, I won't. If I have to do it, I'll make it quick.",
-  'My standards are non-negotiable.',
-  "Ditch the fluff; let's keep it real.",
-  'They reap what they sow, anyway.',
-  'Always expect the unexpected.',
-  'Rely on yourself.',
-  'Less talking, more doing.',
-  'Embrace discomfort.',
+  "Don’t gotta do it? I won’t. Gotta? It’s quick.",
+  "My line’s set. Ain’t budgin’.",
+  "Cut the crap. Keep it real.",
+  "They get what’s comin’. Simple.",
+  "Always ready for the curveball.",
+  "You’re your own backup.",
+  "Less yappin’, more movin’.",
+  "Pain’s just part of it. Deal.",
 ];
 
 export default function RuleNote() {
-  const [displayedText, setDisplayedText] = useState<string[]>(
-    Array(rules.length).fill('')
-  );
-  const [currentRule, setCurrentRule] = useState(0);
-  const [currentChar, setCurrentChar] = useState(0);
-  const [isHovered, setIsHovered] = useState(-1);
+  const [text, setText] = useState<string[]>(Array(rules.length).fill(''));
+  const [ruleIdx, setRuleIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
+  const [hovered, setHovered] = useState(-1);
 
   useEffect(() => {
-    if (currentRule >= rules.length) return;
+    if (ruleIdx >= rules.length) return;
 
-    const rule = rules[currentRule];
-    if (currentChar >= rule.length) {
+    const rule = rules[ruleIdx];
+    if (charIdx >= rule.length) {
       setTimeout(() => {
-        setCurrentRule((prev) => prev + 1);
-        setCurrentChar(0);
-      }, 1200); // Slightly longer pause between rules
+        setRuleIdx((prev) => prev + 1);
+        setCharIdx(0);
+      }, 1000); // Pause before next rule—keeps it tense.
       return;
     }
 
     const timer = setTimeout(() => {
-      setDisplayedText((prev) => {
+      setText((prev) => {
         const newText = [...prev];
-        newText[currentRule] = rule.substring(0, currentChar + 1);
+        newText[ruleIdx] = rule.slice(0, charIdx + 1);
         return newText;
       });
-      setCurrentChar((prev) => prev + 1);
-    }, 75); // Slightly slower typing for dramatic effect
+      setCharIdx((prev) => prev + 1);
+    }, 80); // Slow enough to feel deliberate.
 
     return () => clearTimeout(timer);
-  }, [currentRule, currentChar]);
+  }, [ruleIdx, charIdx]);
 
   return (
-    <div className="min-h-screen p-8 sm:p-12 flex items-center justify-center">
-      <div className="w-full max-w-5xl p-8 sm:p-10 relative">
-        <h1 className="text-7xl sm:text-8xl font-bold mb-12 text-center tracking-[0.2em] transform hover:scale-105 transition-transform duration-300">
+    <div className="min-h-screen bg-black flex items-center justify-center p-6">
+      <div className="w-full max-w-4xl relative">
+        {/* Title */}
+        <h1
+          className={`${deathNoteFont.className} text-6xl sm:text-7xl text-red-700 font-bold mb-10 text-center tracking-[0.3em] drop-shadow-[0_0_10px_rgba(255,0,0,0.5)] hover:drop-shadow-[0_0_15px_rgba(255,0,0,0.8)] transition-all duration-300`}
+        >
           RULE NOTE
         </h1>
-        <div className="space-y-8">
-          {rules.map((_, index) => (
+
+        {/* Rules */}
+        <div className="space-y-6">
+          {rules.map((_, idx) => (
             <div
-              key={index}
-              className={`transition-all duration-500 transform ${
-                displayedText[index]
-                  ? 'translate-x-0 opacity-100'
-                  : 'translate-x-[-50px] opacity-0'
+              key={idx}
+              className={`transition-all duration-400 ${
+                text[idx] ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[-30px]'
               }`}
-              onMouseEnter={() => setIsHovered(index)}
-              onMouseLeave={() => setIsHovered(-1)}
+              onMouseEnter={() => setHovered(idx)}
+              onMouseLeave={() => setHovered(-1)}
             >
-              <div className="flex items-start gap-4">
-                <span className="text-2xl sm:text-3xl font-bold transition-all duration-300">
-                  {index + 1}:
+              <div className="flex items-start gap-3">
+                <span className="text-2xl sm:text-3xl text-red-600 font-bold drop-shadow-[0_0_5px_rgba(255,0,0,0.3)]">
+                  {idx + 1}.
                 </span>
                 <p
-                  className={`${
-                    deathNoteFont.className
-                  } text-4xl sm:text-5xl tracking-wide leading-tight transform transition-all duration-300 ${
-                    isHovered === index ? 'scale-105' : ''
+                  className={`${deathNoteFont.className} text-3xl sm:text-4xl text-gray-200 tracking-wide leading-tight transition-all duration-300 ${
+                    hovered === idx
+                      ? 'text-red-500 scale-105 drop-shadow-[0_0_10px_rgba(255,0,0,0.6)]'
+                      : ''
                   }`}
                 >
-                  {displayedText[index]}
-                  {currentRule === index && (
-                    <span className="animate-pulse ml-1">|</span>
+                  {text[idx]}
+                  {ruleIdx === idx && (
+                    <span className="animate-[pulse_0.8s_ease-in-out_infinite] text-red-600 ml-1">
+                      |
+                    </span>
                   )}
                 </p>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Creepy background effect */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent to-black/80 pointer-events-none" />
       </div>
     </div>
   );
