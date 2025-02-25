@@ -23,13 +23,17 @@ export default function MDXContent({ mdxPath }: MDXContentProps) {
         const response = await fetch(`/api/mdx?path=${encodeURIComponent(mdxPath)}`);
         
         if (!response.ok) {
-          throw new Error(`Failed to load MDX: ${response.statusText}`);
+          const errorData = await response.json();
+          throw new Error(errorData.error || `Failed to load MDX: ${response.statusText}`);
         }
         
         const data = await response.json();
+        if (!data.mdxSource) {
+          throw new Error('Invalid MDX content received');
+        }
         setMdxSource(data.mdxSource);
       } catch (err) {
-        console.error('Error loading MDX content:', err);
+        console.error('Error loading MDX content:', err, '\nPath:', mdxPath);
         setError('Error loading content. Please try again later.');
       } finally {
         setIsLoading(false);
