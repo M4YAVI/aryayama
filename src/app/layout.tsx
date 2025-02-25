@@ -2,6 +2,7 @@ import { DockNav } from '@/components/DockNav';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Roboto_Mono } from 'next/font/google';
+import { Analytics } from "@vercel/analytics/react"
 import './globals.css';
 
 const robotoMono = Roboto_Mono({
@@ -29,7 +30,7 @@ export default function RootLayout({
           <DockNav />
         </div>
         {children}
-
+        <Analytics />
         <Toaster />
       </body>
     </html>
