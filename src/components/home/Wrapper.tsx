@@ -30,7 +30,7 @@ const pageTransition = {
   transition: { duration: 0.3, ease: 'easeInOut' },
 };
 
-// Singleton Audio Manager with initialization state
+// Singleton Audio Manager
 let audio: HTMLAudioElement | null = null;
 let isAudioInitialized = false;
 
@@ -48,11 +48,8 @@ const useAudio = (url: string) => {
   const [hasInteracted, setHasInteracted] = React.useState(false);
 
   React.useEffect(() => {
-    // Check localStorage only after first interaction
     if (hasInteracted && typeof window !== 'undefined') {
-      const savedState = JSON.parse(
-        localStorage.getItem('audioPlaying') || 'false'
-      );
+      const savedState = JSON.parse(localStorage.getItem('audioPlaying') || 'false');
       setIsPlaying(savedState);
     }
   }, [hasInteracted]);
@@ -97,20 +94,27 @@ export default function EnhancedCommandDialog({
   const router = useRouter();
   const { isPlaying, toggleAudio } = useAudio('/music/foolish-dream.mp3');
 
-  const activeSection = SECTION_DATA.find(
+  // Find the active section and adjust index (0-based)
+  const activeSectionIndex = SECTION_DATA.findIndex(
     (section) => section.href === pathname
   );
-  const currentIndex = activeSection?.label || 1;
+  const currentIndex = activeSectionIndex >= 0 ? activeSectionIndex : 0; // Default to 0 if not found
+  const currentLabel = activeSectionIndex >= 0 ? SECTION_DATA[currentIndex].label : 1;
 
-  const nextPage =
-    currentIndex < SECTION_DATA.length
-      ? SECTION_DATA[currentIndex]?.href
-      : undefined;
-  const previousPage =
-    currentIndex > 1 ? SECTION_DATA[currentIndex - 2]?.href : undefined;
+  // Adjust next and previous page logic (0-based index)
+  const nextPage = currentIndex < SECTION_DATA.length - 1 ? SECTION_DATA[currentIndex + 1]?.href : undefined;
+  const previousPage = currentIndex > 0 ? SECTION_DATA[currentIndex - 1]?.href : undefined;
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore shortcuts if focused on input or textarea
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
@@ -125,7 +129,7 @@ export default function EnhancedCommandDialog({
         router.push(previousPage);
       }
 
-      if (e.key === 'm' || e.key === 'M') {
+      if (e.shiftKey && e.key === 'M') {
         e.preventDefault();
         toggleAudio();
       }
@@ -138,10 +142,7 @@ export default function EnhancedCommandDialog({
   return (
     <div className="relative min-h-screen">
       <div className="flex items-center justify-between px-4">
-        <Link
-          href="/"
-          className="flex items-center text-2xl font-bold text-white"
-        >
+        <Link href="/" className="flex items-center text-2xl font-bold text-white">
           Aryayama.
         </Link>
 
@@ -150,7 +151,7 @@ export default function EnhancedCommandDialog({
           size="icon"
           className="rounded-full w-10 h-10 bg-zinc-800 text-white hover:bg-zinc-700 transition-all duration-300"
           onClick={toggleAudio}
-          title={isPlaying ? 'Mute (M)' : 'Unmute (M)'}
+          title="Toggle Audio (Shift + M)"
         >
           {isPlaying ? (
             <Volume2 className="h-5 w-5" />
@@ -185,7 +186,7 @@ export default function EnhancedCommandDialog({
         >
           {children}
           <div className="py-2 text-xs font-bold text-center mt-8 text-white/80">
-            {currentIndex} / {SECTION_DATA.length}
+            {currentLabel} / {SECTION_DATA.length}
           </div>
         </motion.div>
       </AnimatePresence>
