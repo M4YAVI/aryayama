@@ -1,4 +1,4 @@
-// components/CollapsibleBlogList.tsx
+
 'use client';
 
 import BlogCard from '@/components/BlogCard';

@@ -3,10 +3,11 @@ import fs from 'fs';
 import path from 'path';
 
 interface MDXContent {
-  content: string;
+  content: React.ReactNode;
   frontmatter?: {
     title?: string;
     description?: string;
+    [key: string]: any;
   };
 }
 
@@ -29,6 +30,12 @@ export async function getMDXContent(filePath: string): Promise<MDXContent> {
 
 export async function getAllMDXFiles(directory: string): Promise<string[]> {
   const fullPath = path.join(process.cwd(), directory);
+  
+  // Check if directory exists
+  if (!fs.existsSync(fullPath)) {
+    return [];
+  }
+  
   const entries = fs.readdirSync(fullPath, { withFileTypes: true });
   
   const mdxFiles = entries

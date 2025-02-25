@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { MDXRemote } from 'next-mdx-remote';
-import { serialize } from 'next-mdx-remote/serialize';
+
 
 interface MDXContentProps {
   mdxPath: string;
