@@ -1,0 +1,113 @@
+# Langchain
+
+## Installation
+
+```bash
+pip install langchain
+pip install openai
+```
+
+## Basic Setup
+
+```python
+from langchain.llms import OpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+
+# Initialize the LLM
+llm = OpenAI(temperature=0.7)
+
+# Create a prompt template
+prompt = PromptTemplate(
+    input_variables=["topic"],
+    template="Write a brief summary about {topic}."
+)
+
+# Create a chain
+chain = LLMChain(llm=llm, prompt=prompt)
+
+# Run the chain
+response = chain.run(topic="artificial intelligence")
+```
+
+## Tips and Best Practices
+
+### Environment Setup
+- Use environment variables for API keys
+- Set up proper error handling
+- Implement rate limiting for API calls
+
+### Chain Design
+- Keep chains modular and reusable
+- Implement proper input validation
+- Use appropriate memory types
+
+### Performance
+- Cache responses when possible
+- Implement retry mechanisms
+- Monitor token usage
+
+## Common Operations
+
+### Using Different Models
+```python
+from langchain.llms import OpenAI, HuggingFaceHub
+
+# OpenAI model
+llm_openai = OpenAI(model_name="gpt-3.5-turbo")
+
+# HuggingFace model
+llm_hf = HuggingFaceHub(repo_id="google/flan-t5-base")
+```
+
+### Working with Memory
+```python
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationChain
+
+# Initialize memory
+memory = ConversationBufferMemory()
+
+# Create a conversation chain
+conversation = ConversationChain(
+    llm=llm,
+    memory=memory,
+    verbose=True
+)
+
+# Have a conversation
+response1 = conversation.predict(input="Hi, I'm John")
+response2 = conversation.predict(input="What's my name?")
+```
+
+### Document Loading and Processing
+```python
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import CharacterTextSplitter
+
+# Load document
+loader = TextLoader('path/to/file.txt')
+documents = loader.load()
+
+# Split text
+text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+docs = text_splitter.split_documents(documents)
+```
+
+### Vector Store Integration
+```python
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+
+# Create embeddings
+embeddings = OpenAIEmbeddings()
+
+# Create vector store
+vectorstore = Chroma.from_documents(
+    documents=docs,
+    embedding=embeddings
+)
+
+# Similarity search
+docs = vectorstore.similarity_search("your query here", k=4)
+```

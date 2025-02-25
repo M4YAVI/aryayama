@@ -1,0 +1,62 @@
+---
+title: Git
+description: A distributed version control system for tracking changes in source code
+---
+
+# Git
+
+Git is a distributed version control system that tracks changes in any set of computer files, usually used for coordinating work among programmers collaboratively developing source code.
+
+## Installation
+
+1. Download Git from [git-scm.com](https://git-scm.com/downloads)
+2. Run the installer with default settings
+3. Verify installation: `git --version`
+
+## Basic Commands
+
+```bash
+# Initialize a repository
+git init
+
+# Clone a repository
+git clone <repository-url>
+
+# Add files to staging
+git add <file-name>
+git add .
+
+# Commit changes
+git commit -m "commit message"
+
+# Push changes
+git push origin <branch-name>
+
+# Pull changes
+git pull origin <branch-name>
+```
+
+## Branching
+
+```bash
+# Create a new branch
+git branch <branch-name>
+
+# Switch to a branch
+git checkout <branch-name>
+
+# Create and switch to a new branch
+git checkout -b <branch-name>
+
+# Merge branches
+git merge <branch-name>
+```
+
+## Best Practices
+
+1. Write clear commit messages
+2. Make small, focused commits
+3. Use branches for features/fixes
+4. Keep main/master branch stable
+5. Pull before pushing
+6. Use .gitignore for sensitive files

@@ -1,0 +1,74 @@
+---
+title: Python
+description: A versatile programming language used across various domains
+---
+
+# Python
+
+Python is a high-level, interpreted programming language known for its simplicity and readability. It supports multiple programming paradigms and has a comprehensive standard library.
+
+## Installation
+
+1. Download Python from [python.org](https://www.python.org/downloads/)
+2. Run the installer (make sure to check "Add Python to PATH")
+3. Verify installation: `python --version`
+
+## Basic Syntax
+
+```python
+# Variables and data types
+name = "Python"
+age = 30
+is_awesome = True
+
+# Lists
+fruits = ["apple", "banana", "orange"]
+fruits.append("grape")
+
+# Dictionaries
+person = {
+    "name": "John",
+    "age": 25,
+    "city": "New York"
+}
+
+# Functions
+def greet(name):
+    return f"Hello, {name}!"
+
+# Classes
+class Dog:
+    def __init__(self, name):
+        self.name = name
+    
+    def bark(self):
+        return f"{self.name} says woof!"
+```
+
+## Package Management
+
+```bash
+# Install a package
+pip install package-name
+
+# Create virtual environment
+python -m venv myenv
+
+# Activate virtual environment
+# Windows
+myenv\Scripts\activate
+# Unix/MacOS
+source myenv/bin/activate
+
+# Install from requirements.txt
+pip install -r requirements.txt
+```
+
+## Best Practices
+
+1. Use virtual environments
+2. Follow PEP 8 style guide
+3. Write docstrings for documentation
+4. Handle exceptions properly
+5. Use list comprehensions wisely
+6. Keep functions and classes focused

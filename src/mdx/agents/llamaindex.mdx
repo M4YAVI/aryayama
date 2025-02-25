@@ -1,0 +1,86 @@
+# LlamaIndex
+
+LlamaIndex is a data framework designed to help you build LLM applications. It provides a simple interface to connect your LLMs with external data sources, enabling more contextual and accurate responses.
+
+## Overview
+
+LlamaIndex helps solve the challenge of grounding LLMs with external private data, providing tools for data ingestion, structuring, and querying.
+
+## Key Features
+
+- Data connectors for various sources
+- Flexible indexing strategies
+- Query interface for LLMs
+- Document chunking and processing
+- Built-in caching and persistence
+
+## Installation
+
+```bash
+pip install llama-index
+```
+
+## Basic Usage
+
+```python
+from llama_index import GPTSimpleVectorIndex, Document
+from llama_index import SimpleDirectoryReader
+
+# Load documents
+documents = SimpleDirectoryReader('data').load_data()
+
+# Create index
+index = GPTSimpleVectorIndex.from_documents(documents)
+
+# Query your data
+response = index.query("What information do these documents contain?")
+print(response)
+```
+
+## Best Practices
+
+1. Choose appropriate index structures for your use case
+2. Implement proper document chunking strategies
+3. Use metadata to enhance search capabilities
+4. Optimize token usage
+5. Implement caching for frequently accessed data
+
+## Advanced Features
+
+### Custom Node Parsers
+
+```python
+from llama_index import SimpleNodeParser
+
+# Create custom parser
+parser = SimpleNodeParser.from_defaults(
+    chunk_size=512,
+    chunk_overlap=128
+)
+
+# Parse documents
+nodes = parser.get_nodes_from_documents(documents)
+```
+
+### Query Engines
+
+```python
+# Create a query engine with specific parameters
+query_engine = index.as_query_engine(
+    similarity_top_k=2,
+    response_mode="tree_summarize"
+)
+
+# Execute query
+response = query_engine.query("Your question here")
+```
+
+## Resources
+
+- [Official Documentation](https://gpt-index.readthedocs.io/)
+- [GitHub Repository](https://github.com/jerryjliu/llama_index)
+- [Discord Community](https://discord.gg/dGcwcsnxhU)
+
+## Contributing
+
+Contributions to LlamaIndex are welcome! Check out the contribution guidelines in the GitHub repository.

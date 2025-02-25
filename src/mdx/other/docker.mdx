@@ -1,0 +1,54 @@
+---
+title: Docker
+description: A platform for developing, shipping, and running applications in containers
+---
+
+# Docker
+
+Docker is a platform designed to make it easier to create, deploy, and run applications by using containers. Containers allow a developer to package up an application with all of the parts it needs, such as libraries and other dependencies, and deploy it as one package.
+
+## Installation
+
+1. Download Docker Desktop from the [official website](https://www.docker.com/products/docker-desktop)
+2. Follow the installation wizard
+3. Start Docker Desktop
+
+## Basic Commands
+
+```bash
+# Pull an image
+docker pull image-name
+
+# List running containers
+docker ps
+
+# Build an image
+docker build -t image-name .
+
+# Run a container
+docker run image-name
+```
+
+## Docker Compose
+
+Docker Compose is a tool for defining and running multi-container Docker applications.
+
+```yaml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+  redis:
+    image: "redis:alpine"
+```
+
+## Best Practices
+
+1. Use official base images
+2. Minimize layers
+3. Don't install unnecessary packages
+4. Use .dockerignore
+5. Use multi-stage builds
+6. Keep images small and focused

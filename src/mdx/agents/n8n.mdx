@@ -1,0 +1,102 @@
+# n8n
+
+## Installation
+
+```bash
+npm install n8n -g
+```
+
+## Basic Setup
+
+```bash
+# Start n8n
+n8n start
+
+# Start with tunnel for webhook testing
+n8n start --tunnel
+```
+
+## Tips and Best Practices
+
+### Workflow Design
+- Break complex workflows into smaller, manageable nodes
+- Use error handling nodes for robustness
+- Implement proper data validation
+
+### Security
+- Use credentials securely
+- Implement proper access control
+- Regular backup of workflows
+
+### Performance
+- Optimize webhook usage
+- Implement proper error handling
+- Monitor execution times
+
+## Common Operations
+
+### HTTP Request Node
+```javascript
+// HTTP Request Configuration
+{
+  "url": "https://api.example.com/data",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "key": "value"
+  }
+}
+```
+
+### Function Node
+```javascript
+// Transform data
+return items.map(item => {
+  return {
+    ...item,
+    transformed: item.data.toUpperCase()
+  };
+});
+```
+
+### Webhook Node
+```javascript
+// Webhook Configuration
+{
+  "path": "webhook",
+  "method": "POST",
+  "responseMode": "lastNode",
+  "authentication": {
+    "type": "basicAuth"
+  }
+}
+```
+
+### Cron Node
+```javascript
+// Cron Configuration
+{
+  "trigger": "intervals",
+  "interval": [
+    {
+      "field": "hours",
+      "value": 1
+    }
+  ]
+}
+```
+
+### Error Handling
+```javascript
+// Error Workflow
+try {
+  // Your workflow logic
+} catch (error) {
+  // Send error notification
+  await n8n.send("errorNotification", {
+    message: error.message
+  });
+}
+```

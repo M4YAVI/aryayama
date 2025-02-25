@@ -1,0 +1,123 @@
+# React
+
+React is a JavaScript library for building user interfaces, particularly single-page applications. It's maintained by Meta (formerly Facebook) and a community of individual developers and companies.
+
+## Overview
+
+React makes it painless to create interactive UIs by using a component-based architecture and efficient rendering through its Virtual DOM implementation.
+
+## Key Features
+
+- Component-Based Architecture
+- Virtual DOM
+- JSX Syntax
+- Unidirectional Data Flow
+- Rich Ecosystem
+- Strong Community Support
+
+## Installation
+
+```bash
+# Create a new React project
+npx create-react-app my-app
+
+# Or with Vite
+npm create vite@latest my-app -- --template react
+```
+
+## Basic Usage
+
+```jsx
+import React, { useState } from 'react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  )
+}
+
+export default Counter
+```
+
+## Best Practices
+
+1. Use Functional Components
+2. Implement Proper State Management
+3. Break Down Components
+4. Optimize Re-renders
+5. Follow React Hooks Rules
+
+## Advanced Features
+
+### Custom Hooks
+
+```jsx
+import { useState, useEffect } from 'react'
+
+function useWindowSize() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  })
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  return size
+}
+```
+
+### Context API
+
+```jsx
+import { createContext, useContext } from 'react'
+
+const ThemeContext = createContext('light')
+
+function ThemeProvider({ children }) {
+  return (
+    <ThemeContext.Provider value="dark">
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+function ThemedButton() {
+  const theme = useContext(ThemeContext)
+  return <button className={theme}>Themed Button</button>
+}
+```
+
+## Performance Optimization
+
+1. Use React.memo for Component Memoization
+2. Implement useCallback and useMemo
+3. Lazy Loading with Suspense
+4. Code Splitting
+5. Virtual Lists for Large Data Sets
+
+## Resources
+
+- [Official Documentation](https://react.dev)
+- [GitHub Repository](https://github.com/facebook/react)
+- [React DevTools](https://react.dev/learn/react-developer-tools)
+
+## Contributing
+
+React is open-source and welcomes contributions. Check out the contribution guidelines in the GitHub repository.

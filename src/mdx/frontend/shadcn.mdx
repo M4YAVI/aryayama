@@ -1,0 +1,159 @@
+# Shadcn UI
+
+## Installation
+
+```bash
+npx shadcn-ui@latest init
+```
+
+## Basic Setup
+
+```typescript
+// components.json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/app/globals.css",
+    "baseColor": "slate",
+    "cssVariables": true
+  }
+}
+```
+
+## Tips and Best Practices
+
+### Component Installation
+- Install components individually as needed
+- Keep component customizations in a separate directory
+- Use the CLI for consistent installation
+
+### Styling
+- Use CSS variables for theming
+- Customize components through Tailwind classes
+- Maintain consistent styling patterns
+
+### Organization
+- Keep components in a dedicated directory
+- Document component modifications
+- Use proper component composition
+
+## Common Components
+
+### Button
+```bash
+npx shadcn-ui@latest add button
+```
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+export default function ButtonDemo() {
+  return (
+    <div className="flex gap-4">
+      <Button variant="default">Default</Button>
+      <Button variant="destructive">Destructive</Button>
+      <Button variant="outline">Outline</Button>
+      <Button variant="ghost">Ghost</Button>
+    </div>
+  )
+}
+```
+
+### Dialog
+```bash
+npx shadcn-ui@latest add dialog
+```
+
+```tsx
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+export function DialogDemo() {
+  return (
+    <Dialog>
+      <DialogTrigger>Open Dialog</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Dialog Title</DialogTitle>
+          <DialogDescription>
+            This is a dialog description.
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
+```
+
+### Form
+```bash
+npx shadcn-ui@latest add form
+```
+
+```tsx
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+
+const formSchema = z.object({
+  username: z.string().min(2).max(50),
+})
+
+export function FormDemo() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  })
+
+  return (
+    <Form {...form}>
+      <FormField
+        control={form.control}
+        name="username"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Username</FormLabel>
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </Form>
+  )
+}
+```
+
+### Dark Mode
+```tsx
+import { ThemeProvider } from "@/components/theme-provider"
+
+export function App() {
+  return (
+    <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+      <div className="dark:bg-slate-950">
+        {/* Your app content */}
+      </div>
+    </ThemeProvider>
+  )
+}
+```

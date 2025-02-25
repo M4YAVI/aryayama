@@ -1,0 +1,92 @@
+# PostgreSQL
+
+## Installation
+
+```bash
+# Using Homebrew on macOS
+brew install postgresql
+
+# On Windows using Chocolatey
+choco install postgresql
+
+# On Ubuntu/Debian
+sudo apt-get install postgresql
+```
+
+## Basic Setup
+
+1. Start the PostgreSQL service:
+```bash
+# macOS
+brew services start postgresql
+
+# Windows
+net start postgresql
+
+# Linux
+sudo service postgresql start
+```
+
+2. Create a new database:
+```sql
+CREATE DATABASE your_database_name;
+```
+
+## Tips and Best Practices
+
+### Connection Management
+- Always use connection pooling in production
+- Close connections properly after use
+- Use environment variables for connection credentials
+
+### Performance
+- Index frequently queried columns
+- Use EXPLAIN ANALYZE to optimize queries
+- Regularly vacuum your database
+
+### Security
+- Never store passwords in plain text
+- Use role-based access control
+- Keep your PostgreSQL version updated
+
+## Common Operations
+
+```sql
+-- Create a table
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert data
+INSERT INTO users (username) VALUES ('john_doe');
+
+-- Query data
+SELECT * FROM users WHERE username = 'john_doe';
+
+-- Update data
+UPDATE users SET username = 'jane_doe' WHERE id = 1;
+
+-- Delete data
+DELETE FROM users WHERE id = 1;
+```
+
+## Integration with Node.js
+
+```typescript
+import { Pool } from 'pg'
+
+const pool = new Pool({
+  user: 'your_username',
+  host: 'localhost',
+  database: 'your_database',
+  password: 'your_password',
+  port: 5432,
+})
+
+async function queryUsers() {
+  const result = await pool.query('SELECT * FROM users')
+  console.log(result.rows)
+}
+```

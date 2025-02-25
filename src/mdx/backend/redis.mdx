@@ -1,0 +1,108 @@
+# Redis
+
+Redis is an open-source, in-memory data structure store that can be used as a database, cache, message broker, and queue. It supports various data structures and offers high performance and flexibility.
+
+## Overview
+
+Redis (Remote Dictionary Server) provides lightning-fast performance by working primarily in memory while also offering persistence options for data durability.
+
+## Key Features
+
+- In-memory data storage
+- Support for diverse data structures
+- Built-in replication
+- Automatic partitioning with Redis Cluster
+- Pub/Sub messaging paradigm
+- Lua scripting capabilities
+
+## Installation
+
+### Docker
+```bash
+docker run --name redis -d -p 6379:6379 redis
+```
+
+### Windows (WSL)
+```bash
+sudo apt-get update
+sudo apt-get install redis-server
+```
+
+## Basic Usage
+
+```python
+import redis
+
+# Connect to Redis
+r = redis.Redis(host='localhost', port=6379, db=0)
+
+# String operations
+r.set('key', 'value')
+value = r.get('key')
+
+# List operations
+r.lpush('list', 'item1')
+r.rpush('list', 'item2')
+
+# Hash operations
+r.hset('hash', 'field', 'value')
+```
+
+## Best Practices
+
+1. Use appropriate data structures
+2. Implement proper key naming conventions
+3. Set TTL for cached data
+4. Monitor memory usage
+5. Configure persistence based on needs
+
+## Advanced Features
+
+### Pub/Sub
+
+```python
+# Publisher
+publisher = redis.Redis()
+publisher.publish('channel', 'message')
+
+# Subscriber
+subscriber = redis.Redis()
+pubsub = subscriber.pubsub()
+pubsub.subscribe('channel')
+
+for message in pubsub.listen():
+    if message['type'] == 'message':
+        print(message['data'])
+```
+
+### Transactions
+
+```python
+# Start a transaction
+pipe = r.pipeline()
+
+# Queue commands
+pipe.set('key1', 'value1')
+pipe.set('key2', 'value2')
+
+# Execute transaction
+pipe.execute()
+```
+
+## Performance Optimization
+
+1. Use pipelining for bulk operations
+2. Implement proper indexing
+3. Use Redis Cluster for large datasets
+4. Configure appropriate maxmemory policies
+5. Monitor and tune client connections
+
+## Resources
+
+- [Official Documentation](https://redis.io/documentation)
+- [Redis University](https://university.redis.com/)
+- [GitHub Repository](https://github.com/redis/redis)
+
+## Contributing
+
+Redis is open-source and welcomes contributions. Check the contribution guidelines in the official repository.

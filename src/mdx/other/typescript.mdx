@@ -1,0 +1,73 @@
+---
+title: TypeScript
+description: A typed superset of JavaScript, also used in frontend and backend development
+---
+
+# TypeScript
+
+TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.
+
+## Installation
+
+```bash
+# Install TypeScript globally
+npm install -g typescript
+
+# Verify installation
+tsc --version
+```
+
+## Basic Types
+
+```typescript
+// Basic types
+let isDone: boolean = false;
+let decimal: number = 6;
+let color: string = "blue";
+let list: number[] = [1, 2, 3];
+let tuple: [string, number] = ["hello", 10];
+
+// Interface
+interface User {
+  name: string;
+  age: number;
+  email?: string; // Optional property
+}
+
+// Function with types
+function greet(user: User): string {
+  return `Hello, ${user.name}!`;
+}
+
+// Generic
+function identity<T>(arg: T): T {
+  return arg;
+}
+```
+
+## Configuration
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}
+```
+
+## Best Practices
+
+1. Enable strict mode
+2. Use interfaces for object types
+3. Leverage type inference
+4. Use union types for flexibility
+5. Implement proper error handling
+6. Keep types DRY (Don't Repeat Yourself)
+7. Use enums for constants
+8. Document with JSDoc comments

@@ -1,0 +1,103 @@
+# Flask
+
+## Installation
+
+```bash
+pip install flask
+```
+
+## Basic Setup
+
+```python
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+
+@app.route('/api/data', methods=['GET', 'POST'])
+def handle_data():
+    if request.method == 'POST':
+        data = request.json
+        return jsonify({'status': 'success', 'data': data})
+    return jsonify({'message': 'Send a POST request with JSON data'})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+## Tips and Best Practices
+
+### Project Structure
+- Use blueprints for large applications
+- Implement proper error handling
+- Use environment variables for configuration
+
+### Security
+- Enable CSRF protection
+- Use secure session configuration
+- Implement proper authentication
+
+### Performance
+- Use caching when appropriate
+- Implement database connection pooling
+- Optimize database queries
+
+## Common Operations
+
+### Route Parameters
+```python
+@app.route('/user/<int:user_id>')
+def get_user(user_id):
+    return f'User ID: {user_id}'
+```
+
+### Request Handling
+```python
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    # Add authentication logic here
+    return jsonify({'status': 'success'})
+```
+
+### Database Integration (with SQLAlchemy)
+```python
+from flask_sqlalchemy import SQLAlchemy
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost/dbname'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'<User {self.username}>'
+```
+
+### Error Handling
+```python
+@app.errorhandler(404)
+def not_found_error(error):
+    return jsonify({'error': 'Resource not found'}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({'error': 'Internal server error'}), 500
+```
+
+## Testing
+
+```python
+import pytest
+
+def test_hello_world():
+    with app.test_client() as client:
+        response = client.get('/')
+        assert response.status_code == 200
+        assert response.data.decode() == 'Hello, World!'
+```

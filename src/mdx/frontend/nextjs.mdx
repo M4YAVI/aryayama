@@ -1,0 +1,150 @@
+---
+title: Next.js
+description: A comprehensive guide to Next.js in our tech stack
+---
+
+# Next.js
+
+Next.js is our primary React framework for building modern web applications. It provides an exceptional developer experience with features that make it ideal for production-ready applications.
+
+## Key Features
+
+### Server-Side Rendering (SSR)
+
+Next.js excels at server-side rendering, providing:
+- Improved initial page load performance
+- Better SEO optimization
+- Enhanced user experience
+
+```jsx
+// Example of a server-side rendered page
+export async function getServerSideProps() {
+  const res = await fetch('https://api.example.com/data')
+  const data = await res.json()
+
+  return {
+    props: { data }
+  }
+}
+```
+
+### Static Site Generation (SSG)
+
+Static generation allows pages to be pre-rendered at build time:
+- Faster page loads
+- Reduced server load
+- Better caching
+
+```jsx
+// Example of static site generation
+export async function getStaticProps() {
+  const posts = await getPosts()
+
+  return {
+    props: { posts },
+    revalidate: 60 // Re-generate page every 60 seconds
+  }
+}
+```
+
+### API Routes
+
+Next.js provides a solution for building API endpoints:
+
+```jsx
+// pages/api/hello.js
+export default function handler(req, res) {
+  res.status(200).json({ message: 'Hello from Next.js!' })
+}
+```
+
+### File-System Based Routing
+
+Next.js uses file-system based routing:
+- Pages are automatically routed based on their file name
+- Dynamic routes using `[param]` syntax
+- Nested routing support
+
+```jsx
+// pages/posts/[id].js
+export default function Post({ post }) {
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <div>{post.content}</div>
+    </article>
+  )
+}
+```
+
+## Best Practices
+
+### Image Optimization
+
+Use the built-in Image component for automatic optimization:
+
+```jsx
+import Image from 'next/image'
+
+export default function Profile() {
+  return (
+    <Image
+      src="/profile.jpg"
+      alt="Profile"
+      width={500}
+      height={300}
+      priority
+    />
+  )
+}
+```
+
+### Performance Optimization
+
+1. **Automatic Code Splitting**
+   - Each page only loads necessary JavaScript
+   - Improved initial load time
+
+2. **Font Optimization**
+   - Built-in font optimization
+   - Zero layout shift
+
+```jsx
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className={inter.className}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+## Development Tools
+
+### Fast Refresh
+- Instant feedback
+- Preserves component state
+- Minimal setup required
+
+### Built-in ESLint Configuration
+- Code quality checks
+- Best practices enforcement
+- Customizable rules
+
+## Deployment
+
+Next.js applications can be deployed to various platforms:
+- Vercel (Zero configuration)
+- AWS
+- Google Cloud
+- Self-hosted solutions
+
+## Resources
+
+- [Official Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
+- [Examples](https://github.com/vercel/next.js/tree/canary/examples)
