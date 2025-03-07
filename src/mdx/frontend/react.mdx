@@ -1,123 +1,127 @@
-# React
+To set up React with Vite following the guide from shadcn/ui, here are the detailed steps:
 
-React is a JavaScript library for building user interfaces, particularly single-page applications. It's maintained by Meta (formerly Facebook) and a community of individual developers and companies.
+### Create Project
 
-## Overview
-
-React makes it painless to create interactive UIs by using a component-based architecture and efficient rendering through its Virtual DOM implementation.
-
-## Key Features
-
-- Component-Based Architecture
-- Virtual DOM
-- JSX Syntax
-- Unidirectional Data Flow
-- Rich Ecosystem
-- Strong Community Support
-
-## Installation
+Start by creating a new React project using `vite`. Select the **React + TypeScript** template:
 
 ```bash
-# Create a new React project
-npx create-react-app my-app
-
-# Or with Vite
-npm create vite@latest my-app -- --template react
+pnpm create vite@latest
 ```
 
-## Basic Usage
+### Add Tailwind CSS
 
-```jsx
-import React, { useState } from 'react'
+Install Tailwind CSS and its Vite plugin:
 
-function Counter() {
-  const [count, setCount] = useState(0)
+```bash
+pnpm add tailwindcss @tailwindcss/vite
+```
 
+Replace everything in `src/index.css` with the following:
+
+```css
+@import "tailwindcss";
+```
+
+### Edit tsconfig.json File
+
+The current version of Vite splits TypeScript configuration into three files, two of which need to be edited. Add the `baseUrl` and `paths` properties to the `compilerOptions` section of the `tsconfig.json` and `tsconfig.app.json` files:
+
+```json
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+### Edit tsconfig.app.json File
+
+Add the following code to the `tsconfig.app.json` file to resolve paths for your IDE:
+
+```json
+{
+  "compilerOptions": {
+    // ...
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+    // ...
+  }
+}
+```
+
+### Update vite.config.ts
+
+Add the following code to the `vite.config.ts` so your app can resolve paths without error:
+
+```bash
+pnpm add -D @types/node
+```
+
+```typescript
+import path from "path"
+import tailwindcss from "@tailwindcss/vite"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+})
+```
+
+### Run the CLI
+
+Run the `shadcn` init command to set up your project:
+
+```bash
+pnpm dlx shadcn@latest init
+```
+
+You will be asked a few questions to configure `components.json`.
+
+### Add Components
+
+You can now start adding components to your project. For example, to add a `Button` component:
+
+```bash
+pnpm dlx shadcn@latest add button
+```
+
+You can then import it like this:
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+function App() {
   return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>
-        Increment
-      </button>
+    <div className="flex flex-col items-center justify-center min-h-svh">
+      <Button>Click me</Button>
     </div>
   )
 }
 
-export default Counter
+export default App
 ```
 
-## Best Practices
-
-1. Use Functional Components
-2. Implement Proper State Management
-3. Break Down Components
-4. Optimize Re-renders
-5. Follow React Hooks Rules
-
-## Advanced Features
-
-### Custom Hooks
-
-```jsx
-import { useState, useEffect } from 'react'
-
-function useWindowSize() {
-  const [size, setSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight
-  })
-
-  useEffect(() => {
-    const handleResize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      })
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  return size
-}
-```
-
-### Context API
-
-```jsx
-import { createContext, useContext } from 'react'
-
-const ThemeContext = createContext('light')
-
-function ThemeProvider({ children }) {
-  return (
-    <ThemeContext.Provider value="dark">
-      {children}
-    </ThemeContext.Provider>
-  )
-}
-
-function ThemedButton() {
-  const theme = useContext(ThemeContext)
-  return <button className={theme}>Themed Button</button>
-}
-```
-
-## Performance Optimization
-
-1. Use React.memo for Component Memoization
-2. Implement useCallback and useMemo
-3. Lazy Loading with Suspense
-4. Code Splitting
-5. Virtual Lists for Large Data Sets
-
-## Resources
-
-- [Official Documentation](https://react.dev)
-- [GitHub Repository](https://github.com/facebook/react)
-- [React DevTools](https://react.dev/learn/react-developer-tools)
-
-## Contributing
-
-React is open-source and welcomes contributions. Check out the contribution guidelines in the GitHub repository.
+For further details or to explore other frameworks, you can refer to the [shadcn/ui documentation](https://ui.shadcn.com/docs/installation/vite).

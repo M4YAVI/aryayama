@@ -14,14 +14,12 @@ import { frontendTechnologies } from "@/constants/frontend"
 import { backendTechnologies } from "@/constants/backend"
 import { deepLearningTechnologies } from "@/constants/deeplearning"
 import { agentTechnologies } from "@/constants/agents"
-import { otherTechnologies } from "@/constants/other"
 
 const categories: Category[] = [
   { name: "Frontend", icon: Globe, technologies: frontendTechnologies },
   { name: "Backend", icon: Server, technologies: backendTechnologies },
   { name: "Deep Learning", icon: Cpu, technologies: deepLearningTechnologies },
   { name: "AI Agents", icon: Bot, technologies: agentTechnologies },
-  { name: "Other (Tools)", icon: Book, technologies: otherTechnologies },
 ]
 
 export default function SkillsShowcase() {

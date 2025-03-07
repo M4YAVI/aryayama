@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { MDXRemote } from 'next-mdx-remote';
+import { Code } from '@/components/Custom-Components/Code';
 
+const components = {
+  Code
+};
 
 interface MDXContentProps {
   mdxPath: string;
@@ -54,12 +58,8 @@ export default function MDXContent({ mdxPath }: MDXContentProps) {
   }
 
   if (!mdxSource) {
-    return <div>No content available</div>;
+    return null;
   }
 
-  return (
-    <article className="prose prose-invert max-w-none">
-      <MDXRemote {...mdxSource} />
-    </article>
-  );
+  return <MDXRemote {...mdxSource} components={components} />;
 }

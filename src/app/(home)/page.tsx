@@ -1,3 +1,4 @@
+import { Tech } from '@/components/home/tech';
 import Wrapper from '@/components/home/Wrapper';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BadgeCheck } from 'lucide-react';
@@ -48,6 +49,7 @@ export default function Home() {
               has started."
             </blockquote>
           </div>
+          <Tech/>
         </div>
       </div>
     </Wrapper>
