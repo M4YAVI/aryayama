@@ -1,19 +1,31 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { X, ArrowRight, Loader } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Send, Sparkles, X, RefreshCw, User, Bot, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-const styles = {
+type ChatStyle = "default" | "oreki" | "sarcastic";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+}
+
+const styles: Record<ChatStyle, string> = {
   default: "You are a helpful assistant.",
   oreki: "You are Oreki from Hyouka. Respond in a lazy yet insightful manner, often trying to conserve energy but providing deep observations when necessary.",
   sarcastic: "You are a sarcastic assistant. Respond with wit and irony, often making humorous or mocking remarks.",
 };
 
-// List of possible prompt suggestions
-const allSuggestions = [
+const allSuggestions: string[] = [
   "Tell me about yourself.",
   "What's the weather like today?",
   "Can you help me with my homework?",
@@ -24,9 +36,9 @@ const allSuggestions = [
   "Tell me a joke.",
 ];
 
-// Function to get 3 random suggestions with a seed
-const getRandomSuggestions = (seed: number) => {
-  const seededRandom = (seed: number) => {
+// Function to get random suggestions with a seed
+const getRandomSuggestions = (seed: number): string[] => {
+  const seededRandom = (seed: number): (() => number) => {
     let value = seed;
     return () => {
       value = (value * 16807) % 2147483647;
@@ -36,48 +48,48 @@ const getRandomSuggestions = (seed: number) => {
 
   const random = seededRandom(seed);
   const shuffled = [...allSuggestions].sort(() => random() - 0.5);
-  return shuffled.slice(0, 3);
+  return shuffled.slice(0, 4);
 };
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [selectedStyle, setSelectedStyle] = useState("default");
-  const [suggestionSeed, setSuggestionSeed] = useState(1);
+  const [input, setInput] = useState<string>("");
+  const [selectedStyle, setSelectedStyle] = useState<ChatStyle>("default");
+  const [suggestionSeed, setSuggestionSeed] = useState<number>(1);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const chatHistoryRef = useRef<HTMLDivElement>(null);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
-  type Message = {
-    role: "user" | "assistant";
-    content: string;
-  };
-
-  // Initialize suggestions on client-side only
   useEffect(() => {
     setIsClient(true);
     setSuggestions(getRandomSuggestions(suggestionSeed));
   }, [suggestionSeed]);
 
+
   useEffect(() => {
-    if (chatHistoryRef.current) {
-      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
 
   useEffect(() => {
     setMessages([]);
   }, [selectedStyle]);
 
-  const sendMessage = async (userMessage: string) => {
+  const sendMessage = async (userMessage: string): Promise<void> => {
     if (!userMessage.trim()) return;
     setIsLoading(true);
-    const newUserMessage: Message = { role: "user", content: userMessage };
+
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const newUserMessage: Message = { role: "user", content: userMessage, timestamp };
     const updatedMessages = [...messages, newUserMessage];
     setMessages(updatedMessages);
-    setInput(""); 
+    setInput("");
+    setShowSuggestions(false);
 
     try {
       const response = await fetch('/api/chat', {
@@ -87,120 +99,233 @@ export default function ChatInterface() {
         },
         body: JSON.stringify({
           messages: updatedMessages,
-          style: styles[selectedStyle as keyof typeof styles],
+          style: styles[selectedStyle],
         }),
       });
+
       if (!response.ok) {
         throw new Error('Failed to get response');
       }
+
       const data = await response.json();
-      const assistantMessage = data.message;
-      setMessages((prev) => [...prev, { role: "assistant", content: assistantMessage }]);
+      setTimeout(() => {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            role: "assistant",
+            content: data.message,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+        setIsLoading(false);
+      }, 500); // Small delay for a natural feel
     } catch (error) {
       console.error("Error:", error);
-      setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, something went wrong. Try again!" }]);
-    } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setMessages([...updatedMessages, {
+          role: "assistant",
+          content: "Sorry, something went wrong. Try again!",
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        }]);
+        setIsLoading(false);
+      }, 500);
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
+  const handleSuggestionClick = (suggestion: string): void => {
     sendMessage(suggestion);
   };
 
-  const handleRefreshSuggestions = () => {
-    setSuggestionSeed(prev => prev + 1);
+  const focusInput = (): void => {
+    inputRef.current?.focus();
   };
 
-  const handleDismissSuggestions = () => {
-    setShowSuggestions(false);
-  };
-
-  const handleStyleChange = (value: string) => {
-    setSelectedStyle(value);
-  };
-
-  // Only render suggestions on client-side
-  const renderSuggestions = () => {
-    if (!isClient) return null;
-    
-    return showSuggestions && (
-      <div className="flex flex-wrap gap-2">
-        {suggestions.map((suggestion, i) => (
-          <Card
-            key={i}
-            className="bg-gray-900 border-gray-800 p-4 hover:bg-gray-800 transition cursor-pointer"
-            onClick={() => handleSuggestionClick(suggestion)}
-          >
-            <p className="text-sm">{suggestion}</p>
-          </Card>
-        ))}
-        <Button variant="ghost" size="icon" onClick={handleRefreshSuggestions}>
-          <ArrowRight className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" onClick={handleDismissSuggestions}>
-          <X className="h-5 w-5" />
-        </Button>
-      </div>
-    );
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-        <div className="flex justify-center">
-          <Select value={selectedStyle} onValueChange={handleStyleChange}>
-            <SelectTrigger className="w-[200px] bg-transparent border-gray-800">
-              <SelectValue placeholder="Choose style" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="default">Default</SelectItem>
-              <SelectItem value="oreki">Oreki from Hyouka</SelectItem>
-              <SelectItem value="sarcastic">Sarcastic</SelectItem>
-            </SelectContent>
-          </Select>
+    <div className="flex h-screen bg-black text-white overflow-hidden">
+      <div className="w-full md:max-w-4xl mx-auto flex flex-col h-[80%] p-2">
+        <div className="flex items-center justify-between p-4 border-b border-gray-800 bg-black/20 backdrop-blur-sm rounded-t-xl">
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-10 rounded-full  flex items-center justify-center">
+              <Bot className="h-5 w-5 text-white" />
+            </div>
+            <h1 className="text-xl font-bold">
+              ChatAI
+            </h1>
+          </div>
+          
+          <Tabs defaultValue={selectedStyle} className="w-[270px]" onValueChange={(value) => setSelectedStyle(value as ChatStyle)}>
+            <TabsList className="w-full bg-gray-900/50 border border-gray-800">
+              <TabsTrigger value="default" className="data-[state=active]:bg-blue-600">
+                Default
+              </TabsTrigger>
+              <TabsTrigger value="oreki" className="data-[state=active]:bg-purple-600">
+                Oreki
+              </TabsTrigger>
+              <TabsTrigger value="sarcastic" className="data-[state=active]:bg-pink-600">
+                Sarcastic
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
+        
+        {/* Chat area */}
+        <ScrollArea className="flex-1 p-4 overflow-y-auto bg-black/10 backdrop-blur-sm">
+          {messages.length === 0 && !isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center animate-pulse">
+                <Sparkles className="h-10 w-10 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
+                Start a conversation
+              </h2>
+              <p className="text-gray-400 max-w-md">
+                Choose a suggestion below or type your own message to begin chatting with the AI.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6 pb-4">
+              <AnimatePresence>
+                {messages.map((msg, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`flex gap-3 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                      <Avatar className={cn(
+                        "h-8 w-8 rounded-full flex items-center justify-center text-white",
+                        msg.role === 'user'
+                          ? "bg-blue-600"
+                          : "bg-gradient-to-br from-purple-600 to-blue-600"
+                      )}>
+                        {msg.role === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                      </Avatar>
+                      
+                      <div className="space-y-1">
+                        <div className={cn(
+                          "p-4 rounded-2xl relative",
+                          msg.role === 'user'
+                            ? "bg-blue-600 text-white rounded-tr-none"
+                            : "bg-gray-800 text-gray-100 rounded-tl-none border border-gray-700"
+                        )}>
+                          <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                        </div>
+                        <p className="text-xs text-gray-500 px-2">
+                          {msg.timestamp}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
 
-        <div ref={chatHistoryRef} className="space-y-4 max-h-[500px] overflow-y-auto">
-          {messages.length === 0 && !isLoading && (
-            <div className="text-center text-gray-400">
-              Start chatting by typing a message or selecting a suggestion below!
+                {isLoading && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-start"
+                  >
+                    <div className="flex gap-3 max-w-[80%]">
+                      <Avatar className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white">
+                        <Bot className="h-4 w-4" />
+                      </Avatar>
+                      
+                      <div className="space-y-1">
+                        <div className="bg-gray-800 text-gray-100 p-4 rounded-2xl rounded-tl-none border border-gray-700 flex items-center">
+                          <div className="flex space-x-1">
+                            <div className="h-2 w-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="h-2 w-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="h-2 w-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <div ref={chatEndRef} />
             </div>
           )}
-          {messages.map((msg, index) => (
-            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-600' : 'bg-gray-800'}`}>
-                {msg.content}
+        </ScrollArea>
+        
+        {/* Suggestions area */}
+        <AnimatePresence>
+          {showSuggestions && suggestions.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="p-2 pt-4"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-gray-400">Suggested prompts</h3>
+                <div className="flex gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-7 w-7 rounded-full hover:bg-gray-800"
+                    onClick={() => setSuggestionSeed(prev => prev + 1)}
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-7 w-7 rounded-full hover:bg-gray-800"
+                    onClick={() => setShowSuggestions(false)}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="p-3 rounded-lg bg-gray-800 flex items-center gap-2">
-                <Loader className="animate-spin h-5 w-5" />
-                Thinking...
+              
+              <div className="grid grid-cols-2 gap-2">
+                {suggestions.map((suggestion, i) => (
+                  <Card
+                    key={i}
+                    className="bg-gray-900/50 border-gray-800 hover:border-gray-700 p-3 hover:bg-gray-800/50 transition-all cursor-pointer flex items-center group"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    <p className="text-sm text-gray-300 flex-1">{suggestion}</p>
+                    <ChevronRight className="h-4 w-4 text-gray-500 group-hover:text-blue-400 transition-colors" />
+                  </Card>
+                ))}
               </div>
-            </div>
+            </motion.div>
           )}
+        </AnimatePresence>
+        
+        {/* Input area */}
+        <div className="pt-2">
+          <div className="relative flex items-center">
+            <Input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              className="py-6 pl-4 pr-12 bg-gray-900/70 border-gray-800 focus-visible:ring-blue-600 text-gray-200 rounded-xl"
+              disabled={isLoading}
+            />
+            <Button
+              className="absolute right-2 h-10 w-10 p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => sendMessage(input)}
+              disabled={isLoading || !input.trim()}
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
-
-        {renderSuggestions()}
-
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage(input)}
-            className="flex-1 p-2 rounded-lg bg-gray-900 border border-gray-800 focus:outline-none focus:border-blue-500"
-            placeholder="Type your message..."
-            disabled={isLoading}
-          />
-          <Button onClick={() => sendMessage(input)} disabled={isLoading || !input.trim()}>
-            Send
-          </Button>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

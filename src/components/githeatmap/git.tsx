@@ -64,7 +64,7 @@ const Heatmap = ({ data }: ContributionsHeatmapProps) => {
       {/* Stats Overview */}
       <div className="mb-10 flex items-center justify-between">
         <motion.h2
-          className="text-4xl font-black text-white tracking-wider bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent"
+          className="text-4xl font-black text-white tracking-wider  text-transparent"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
