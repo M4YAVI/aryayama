@@ -1,12 +1,16 @@
-'use client';
-import SkillsShowcase from '@/components/home/skill';
+import { fetchGitHubData } from '@/actions/gitAction';
+import DirectoryTree from '@/components/DirectoryTree';
+import Heatmap from '@/components/githeatmap/git';
 import Wrapper from '@/components/home/Wrapper';
 
-
-export default function Page2() {
+export default async function Page2() {
+  const githubData = await fetchGitHubData('SangeethChejerla');
   return (
     <Wrapper>
- <SkillsShowcase/>
+      <div className="max-w-3xl mx-auto">
+        <DirectoryTree />
+        <Heatmap data={githubData} />
+      </div>
     </Wrapper>
   );
 }

@@ -102,7 +102,20 @@ const starterKit = StarterKit.configure({
   codeBlock: {
     HTMLAttributes: {
       class: cx(
-        'rounded-md bg-muted text-muted-foreground border p-5 font-mono font-medium'
+        'rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-100 font-mono',
+        'p-0 overflow-hidden shadow-lg',
+        'before:content-[""] before:block before:h-8 before:bg-gradient-to-r before:from-zinc-800 before:to-zinc-900',
+        'before:border-b before:border-zinc-700 before:px-4 before:py-2',
+        'before:relative',
+        // Terminal buttons
+        'after:content-[""] after:absolute after:top-2.5 after:left-4',
+        'after:h-3 after:w-3 after:rounded-full after:bg-red-500',
+        'after:shadow-[1.4rem_0_0_0_#f0ad4e,2.8rem_0_0_0_#5cb85c]',
+        // Code content styles
+        '[&>code]:block [&>code]:p-4 [&>code]:pt-2',
+        '[&>code]:overflow-x-auto [&>code]:scrollbar-thin [&>code]:scrollbar-thumb-zinc-700',
+        // Text blinking cursor effect
+        '[&>code]:after:content-["_"] [&>code]:after:animate-blink'
       ),
     },
   },
