@@ -12,9 +12,9 @@ interface YearMonthPickerProps {
   value: Date
   onChange: (date: Date) => void
 }
-
 export function YearMonthPicker({ value, onChange }: YearMonthPickerProps) {
   const [date, setDate] = useState<Date | undefined>(value)
+  const currentYear = new Date().getFullYear()
 
   return (
     <Popover>
@@ -39,12 +39,11 @@ export function YearMonthPicker({ value, onChange }: YearMonthPickerProps) {
           }}
           initialFocus
           captionLayout="dropdown-buttons"
-          fromYear={2017}
-          toYear={2025}
+          fromYear={2024}
+          toYear={currentYear}
           showOutsideDays={false}
         />
       </PopoverContent>
     </Popover>
   )
 }
-

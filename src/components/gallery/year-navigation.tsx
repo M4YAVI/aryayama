@@ -1,7 +1,6 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 
@@ -13,8 +12,16 @@ export function YearNavigation({ currentYear }: YearNavigationProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-
-  const years = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+  
+  // Get the current year
+  const today = new Date()
+  const currentCalendarYear = today.getFullYear()
+  
+  // Generate years array from 2024 up to current year
+  const years = Array.from(
+    { length: currentCalendarYear - 2024 + 1 },
+    (_, i) => 2024 + i
+  )
 
   const handleYearClick = (year: number) => {
     const params = new URLSearchParams(searchParams)
@@ -45,4 +52,3 @@ export function YearNavigation({ currentYear }: YearNavigationProps) {
     </div>
   )
 }
-
