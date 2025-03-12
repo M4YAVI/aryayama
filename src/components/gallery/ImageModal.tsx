@@ -1,4 +1,3 @@
-// components/ImageModal.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -24,7 +23,6 @@ export default function ImageModal({ image }: ImageModalProps) {
     }
   };
 
-  // Safely format the date
   let formattedDate;
   try {
     const date = new Date(image.year, image.month - 1);

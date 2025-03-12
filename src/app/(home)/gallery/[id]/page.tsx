@@ -70,18 +70,17 @@ export default async function ImagePage({ params }: PageProps) {
   const imageDate = new Date(singleImage.year, singleImage.month - 1)
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto">
       {/* --- SINGLE IMAGE DETAIL --- */}
       <h1 className="text-2xl font-semibold mb-2">{singleImage.title}</h1>
       <p className="text-gray-500 mb-6">{format(imageDate, "MMMM yyyy")}</p>
 
-      <div className="bg-gray-900 rounded-md overflow-hidden mb-12 relative aspect-[4/3]">
+      <div className="bg-gray-900 rounded-md overflow-hidden mb-12 relative aspect-square">
         <Image
           src={singleImage.url}
           alt={singleImage.title}
           fill
           priority
-          sizes="(max-width: 768px) 100vw, 800px"
           className="object-contain"
         />
       </div>
