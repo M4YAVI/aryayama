@@ -10,9 +10,9 @@ export default async function GalleryPage({
 }: {
   searchParams: { year?: string }
 }) {
+  const params = await searchParams;
   // Get the current year from params or default to current year
-  const currentYear = Number(searchParams?.year) || new Date().getFullYear();
-
+  const currentYear = Number(params?.year) || new Date().getFullYear();
   // Fetch ALL images for the selected year (not just the current month)
   const allYearImages = await getImages({ year: currentYear });
 

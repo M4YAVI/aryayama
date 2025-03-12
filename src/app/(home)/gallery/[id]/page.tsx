@@ -6,17 +6,17 @@ import { ImageGrid, GalleryImage } from "@/components/gallery/Image-grid"
 import { Metadata } from "next"
 
 interface PageProps {
-  params: { 
-    id: string 
-  }
+  params: Promise<{ id: string }>; // params is a Promise in Next.js 15 server components
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  // Fetch the image for metadata
+  // Await params to resolve the Promise and destructure id
+  const { id } = await params;
+
   const { data: image } = await supabase
     .from("images")
     .select("title")
-    .eq("id", params.id)
+    .eq("id", id)  // Use the awaited id value instead of params.id
     .single()
 
   return {
@@ -26,11 +26,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ImagePage({ params }: PageProps) {
-  // 1) Fetch the single image
+  const { id } = await params;
   const { data: singleImage, error: singleErr } = await supabase
     .from("images")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .single()
 
   if (singleErr || !singleImage) {
