@@ -29,3 +29,5 @@ export const calculateWPM = (input: string, elapsedSeconds: number) => {
   const minutes = elapsedSeconds / 60;
   return Math.round(wordsTyped / minutes);
 };
+
+// Add this function to check if the user is logged in
