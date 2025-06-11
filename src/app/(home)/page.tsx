@@ -49,7 +49,7 @@ export default function Home() {
               has started."
             </blockquote>
           </div>
-          <Tech/>
+          <Tech />
         </div>
       </div>
     </Wrapper>

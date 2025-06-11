@@ -4,7 +4,9 @@ import SearchInput from '@/components/SearchInput';
 import { db } from '@/db/db';
 import { posts, postTags, tags } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { cache } from 'react';
+
+
+export const dynamic = 'force-dynamic';
 
 interface Tag {
   id: number;
@@ -23,17 +25,14 @@ interface PostWithTags extends Post {
   tags: Tag[];
 }
 
+// Define searchParams as an object (no Promise)
 interface BlogPageProps {
-  searchParams:
-    | {
-        q?: string;
-      }
-    | Promise<{
-        q?: string;
-      }>;
+  searchParams: {
+    q?: string;
+  };
 }
 
-const getBlogData = cache(async () => {
+const getBlogData = (async () => {
   const allTags = await db.select().from(tags);
   const postsWithTagsResult = await db
     .select({
@@ -52,14 +51,14 @@ const getBlogData = cache(async () => {
       if (!post) {
         post = {
           ...row.post,
-          createdAt: new Date(row.post.createdAt), // Corrected line: Ensure createdAt is a Date object
+          createdAt: new Date(row.post.createdAt),
           tags: [],
-        } as unknown as PostWithTags;
+        } as PostWithTags;
         acc.push(post);
       }
 
       if (row.tag) {
-        post.tags.push(row.tag as unknown as Tag);
+        post.tags.push(row.tag as Tag);
       }
 
       return acc;
@@ -81,23 +80,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     });
   });
 
-  const query = (await searchParams).q || '';
+  // Access searchParams directly (remove the "await")
+  const query = searchParams.q || '';
   const lowerCaseQuery = query.toLowerCase();
 
   const filteredPosts = query
     ? transformedPosts.filter((post) => {
         const titleMatch = post.title.toLowerCase().includes(lowerCaseQuery);
         const contentMatch = post.content
-          ? (post.content as string).toLowerCase().includes(lowerCaseQuery)
+          ? post.content.toLowerCase().includes(lowerCaseQuery)
           : false;
         const headingMatch = post.content
-          ? (post.content as string)
-              .split('\n')
-              .some(
-                (line) =>
-                  line.startsWith('#') &&
-                  line.toLowerCase().includes(lowerCaseQuery)
-              )
+          ? post.content.split('\n').some(
+              (line) =>
+                line.startsWith('#') &&
+                line.toLowerCase().includes(lowerCaseQuery)
+            )
           : false;
 
         return titleMatch || contentMatch || headingMatch;
