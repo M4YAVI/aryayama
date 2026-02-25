@@ -11,25 +11,25 @@ export const tools: Tool[] = [
     {
         name: "CrawlConsole",
         description: "A fast, concurrent web scraper and AI integration engine meant for processing massive amounts of unstructured data.",
-        tech: ["Rust", "Next.js", "PostgreSQL"],
+        tech: ["Python", "FastAPI", "crawl4AI"],
         url: "#",
-        github: "#",
+        github: "https://github.com/M4YAVI/crawlconsole",
         status: "Active"
     },
     {
-        name: "Neural DB Interface",
-        description: "Natural language to SQL interface for exploring large relational databases seamlessly without writing queries.",
-        tech: ["Python", "React", "OpenAI"],
-        url: "#",
-        github: "#",
-        status: "Completed"
+        name: "PolyWiki",
+        description: "AI-driven interactive knowledge explorer that generates structured, category-based wiki content with real-time streaming and deep topic navigation.",
+        tech: ["Nextjs", "Typescript", "Openrouter"],
+        url: "https://polywiki.netlify.app/",
+        github: "https://github.com/M4YAVI/polywiki",
+        status: "Active"
     },
     {
-        name: "Minimalist Term",
-        description: "A browser-based terminal emulator that mimics vintage computing environments with modern features.",
-        tech: ["TypeScript", "WebGL", "WebSockets"],
+        name: "Youtube CLI",
+        description: "A browser-based CLI tool that lets users fetch YouTube video transcripts instantly using a simple yt <url> command.",
+        tech: ["TypeScript", "Chalk", "Bun"],
         url: "#",
-        github: "#",
-        status: "Beta"
+        github: "https://github.com/M4YAVI/youtube-cli",
+        status: "Completed"
     }
 ];
