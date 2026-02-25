@@ -9,10 +9,8 @@ import { notFound } from 'next/navigation';
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
 
-    // Find matching post from our central data file
     const post = blogs.find(b => b.slug === slug);
 
-    // Fallback if URL slug is invalid
     if (!post) {
         return notFound();
     }
@@ -23,21 +21,20 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <ScrollProgress />
 
             <article className="relative z-10 w-full max-w-[960px] mx-auto bg-[#000000] backdrop-blur-xl rounded-xl border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.9)] overflow-hidden font-[family-name:var(--font-geist-pixel-square)]">
-                {/* Header Section */}
                 <div className="p-8 md:p-16 border-b border-white/5 relative bg-gradient-to-b from-white/5 to-transparent">
                     <Link href="/blog" className="inline-flex items-center text-white/50 hover:text-white transition-colors mb-12 group text-sm tracking-[2px] uppercase font-bold">
                         <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                         Back to Log
                     </Link>
 
-                    <div className="flex flex-wrap items-center gap-6 mb-6 text-white/40 text-[12px] font-bold tracking-[2px] uppercase">
+                    <div className="flex items-center justify-between mb-8 text-white/40 text-[12px] font-bold tracking-[2px] uppercase w-full">
                         <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-4 h-4 mb-[2px]" />
                             <span>{post.date}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            <span>5 min read</span>
+                            <Clock className="w-4 h-4 mb-[2px]" />
+                            <span>{post.readTime || '5 min read'}</span>
                         </div>
                     </div>
 
@@ -47,9 +44,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     </h1>
                 </div>
 
-                {/* Content Section */}
                 <div className="p-8 md:p-16 relative">
-                    {/* Decorative grid lines */}
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
 
                     <div className="relative z-10 prose prose-invert prose-p:text-white/70 prose-p:text-[clamp(1rem,1.5vw,1.1rem)] prose-p:leading-[1.8] prose-p:font-bold prose-p:tracking-[0.5px] max-w-none">
@@ -60,13 +55,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                         )}
                     </div>
 
-                    {/* Footer */}
                     <div className="mt-20 pt-8 border-t border-white/5 flex justify-between items-center text-[12px] font-bold tracking-[2px] uppercase text-white/40">
                         <span>End of Log</span>
-                        <div className="flex gap-4">
-                            <span className="hover:text-white transition-colors cursor-pointer">Share Entry</span>
-                            <span className="hover:text-white transition-colors cursor-pointer">Copy Link</span>
-                        </div>
                     </div>
                 </div>
             </article>

@@ -27,7 +27,7 @@ const SurvivalUI = () => {
 
                 <div className="text-[#e5e5e5] text-[clamp(0.85rem,1.8vw,1.1rem)] leading-[1.6] tracking-[0.5px] drop-shadow-[1px_1px_2px_rgba(0,0,0,0.8)] max-w-[900px] mx-auto relative z-10 font-bold">
                     <p className="mb-8 text-justify">
-                        I love too many things. History, books, good stories, sports, games... honestly, almost everything this world has to offer. The problem? Not enough time to cover it all. And somehow, my list keeps growing.
+                        I love too many things. History, Literature, Philosophy, good stories, sports, games... honestly, almost everything this world has to offer. The problem? Not enough time to cover it all. And somehow, my list keeps growing.
                     </p>
                     <p className="mb-8 text-justify">
                         I look lazy. I probably am lazy. I don't like wasting energy on things that don't matter. If I can solve something by just watching and thinking, why would I do more? Most people rush around doing stuff. I prefer to sit back, observe, and figure things out quietly.
