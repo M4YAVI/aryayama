@@ -20,7 +20,7 @@ const SurvivalUI = () => {
             </div>
 
             {/* TEXT */}
-            <div className="bg-[rgba(15,15,15,0.95)] border border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_0_80px_rgba(0,0,0,0.8)] relative pt-[120px] px-[clamp(20px,5vw,70px)] pb-[clamp(30px,6vw,70px)] rounded-[2px]">
+            <div className="bg-black border border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.9),inset_0_0_80px_rgba(0,0,0,0.8)] relative pt-[120px] px-[clamp(20px,5vw,70px)] pb-[clamp(30px,6vw,70px)] rounded-[2px]">
 
                 {/* Noise overlay */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter2\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'1.5\' numOctaves=\'2\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter2)\'/%3E%3C/svg%3E")' }}></div>

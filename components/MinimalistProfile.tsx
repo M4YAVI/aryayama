@@ -31,7 +31,7 @@ const MinimalistProfile = () => {
     }, []);
 
     return (
-        <div className="w-full max-w-[960px] mx-auto bg-[#0a0a0a] rounded-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.9)] font-[family-name:var(--font-geist-pixel-square)]">
+        <div className="w-full max-w-[960px] mx-auto bg-[#000000] rounded-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.9)] font-[family-name:var(--font-geist-pixel-square)]">
             {/* Banner */}
             <div className="w-full h-[300px] relative">
                 <Image fill className="object-cover" src="/bng.png" alt="Banner" sizes="960px" />
@@ -124,6 +124,28 @@ const MinimalistProfile = () => {
                                     className="underline underline-offset-4 hover:text-yellow-400"
                                 >
                                     email me
+                                </Link>
+                                .
+                            </p>
+
+                            <p>
+                                Read my thoughts and ideas on my{" "}
+                                <Link
+                                    href="/blog"
+                                    className="underline underline-offset-4 hover:text-yellow-400 transition-colors"
+                                >
+                                    Blog
+                                </Link>
+                                .
+                            </p>
+
+                            <p>
+                                Check out the{" "}
+                                <Link
+                                    href="/tools"
+                                    className="underline underline-offset-4 hover:text-yellow-400 transition-colors"
+                                >
+                                    Tools I Build
                                 </Link>
                                 .
                             </p>
